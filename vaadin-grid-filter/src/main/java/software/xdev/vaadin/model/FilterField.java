@@ -37,7 +37,6 @@ import software.xdev.vaadin.comparators.NotEqualComparator;
 /**
  * @param <B> The bean.
  * @param <T> The type or field to use.
- * @author tboehm
  */
 public class FilterField<B, T> implements Serializable
 {

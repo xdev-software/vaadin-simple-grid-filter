@@ -28,8 +28,6 @@ import software.xdev.vaadin.comparators.FilterComparator;
 
 /**
  * Used for checking if the string can be parsed to another datatype.
- *
- * @author tboehm
  */
 public final class TypeHelper
 {

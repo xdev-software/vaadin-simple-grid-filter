@@ -17,8 +17,6 @@ package software.xdev.vaadin.comparators.utl;
 
 /**
  * Exception if type is not applicable for a comparator.
- *
- * @author tboehm
  */
 public class MismatchingTypeException extends RuntimeException
 {

@@ -21,8 +21,6 @@ import java.util.function.Predicate;
 
 /**
  * Interface for comparator.
- *
- * @author tboehm
  */
 public interface FilterComparator
 {

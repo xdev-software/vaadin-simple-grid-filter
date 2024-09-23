@@ -27,8 +27,6 @@ import software.xdev.vaadin.comparators.utl.TypeHelper;
 
 /**
  * Used for comparison with greater than.
- *
- * @author tboehm
  */
 public final class GreaterThanComparator implements FilterComparator
 {

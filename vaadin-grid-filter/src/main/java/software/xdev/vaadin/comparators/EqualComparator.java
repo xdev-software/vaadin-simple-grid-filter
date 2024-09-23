@@ -30,8 +30,6 @@ import software.xdev.vaadin.comparators.utl.TypeHelper;
 
 /**
  * Used for comparison with equals.
- *
- * @author tboehm
  */
 public final class EqualComparator implements FilterComparator
 {
