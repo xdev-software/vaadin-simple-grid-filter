@@ -1006,7 +1006,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final FilterField<T, X> newFilterField,
 		final FilterField<T, ?> oldFilterField)
 	{
-		LOGGER.debug("A filter field with the same description is already existing. Adding comparators to it.");
 		FilterField<T, ?> newlyBuildFilterField = oldFilterField;
 		
 		for(final FilterComparator comparator : newFilterField.getAvailableComparators())
@@ -1050,10 +1049,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		if(!identifier.isBlank())
 		{
 			this.identifier = identifier;
-		}
-		else
-		{
-			LOGGER.error("Query parameters won't be enabled for this component because the identifier is blank.");
 		}
 		
 		return this;
@@ -1297,7 +1292,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final boolean conditionEditable,
 		final String badgeId)
 	{
-		LOGGER.debug("Setting initial filter.");
 		FilterField<T, ?> finalFilterField = filterField;
 		
 		if(conditionEditable)
