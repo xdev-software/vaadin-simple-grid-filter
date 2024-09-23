@@ -20,26 +20,27 @@ import java.util.Objects;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 
+
 /**
  * Used to build the date pattern from I18n.
  */
 public final class DateHelper
 {
-    private DateHelper()
-    {
-    }
-
-    public static DateTimeFormatter getDatePattern(final DatePicker.DatePickerI18n datePickerI18n)
-    {
-        Objects.requireNonNull(datePickerI18n);
-        
-        final StringBuilder patternString = new StringBuilder();
-
-        for (final String pattern : datePickerI18n.getDateFormats())
-        {
-            patternString.append("[").append(pattern).append("]");
-        }
-        
-        return DateTimeFormatter.ofPattern(patternString.toString());
-    }
+	private DateHelper()
+	{
+	}
+	
+	public static DateTimeFormatter getDatePattern(final DatePicker.DatePickerI18n datePickerI18n)
+	{
+		Objects.requireNonNull(datePickerI18n);
+		
+		final StringBuilder patternString = new StringBuilder();
+		
+		for(final String pattern : datePickerI18n.getDateFormats())
+		{
+			patternString.append("[").append(pattern).append("]");
+		}
+		
+		return DateTimeFormatter.ofPattern(patternString.toString());
+	}
 }

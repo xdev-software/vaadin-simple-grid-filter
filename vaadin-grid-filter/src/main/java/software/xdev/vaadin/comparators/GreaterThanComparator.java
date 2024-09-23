@@ -15,11 +15,7 @@
  */
 package software.xdev.vaadin.comparators;
 
-
 import java.util.function.Predicate;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.function.ValueProvider;
 
@@ -30,7 +26,6 @@ import software.xdev.vaadin.comparators.utl.TypeHelper;
  */
 public final class GreaterThanComparator implements FilterComparator
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GreaterThanComparator.class);
     private static GreaterThanComparator instance;
 
     private GreaterThanComparator()
@@ -62,8 +57,6 @@ public final class GreaterThanComparator implements FilterComparator
     @Override
     public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
     {
-        LOGGER.debug("Checking if the item is greater than {}", searchQuery);
-        
         return item ->
         {
             final T apply = provider.apply(item);
@@ -72,11 +65,9 @@ public final class GreaterThanComparator implements FilterComparator
 
             if (apply instanceof final Number numb && TypeHelper.isDouble(searchQuery))
             {
-                LOGGER.debug("Item is an instance of Number.");
                 return numb.doubleValue() > (Double.parseDouble(searchQuery));
             }
             
-            LOGGER.debug("Condition is false because the type is not applicable.");
             return false;
         };
     }

@@ -15,10 +15,7 @@
  */
 package software.xdev.vaadin.model;
 
-import java.io.Serializable;
 import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
 
 import com.vaadin.flow.function.ValueProvider;
 
@@ -38,7 +35,7 @@ import software.xdev.vaadin.comparators.NotEqualComparator;
  * @param <B> The bean.
  * @param <T> The type or field to use.
  */
-public class FilterField<B, T> implements Serializable
+public class FilterField<B, T>
 {
 	private final ValueProvider<B, T> valueProvider;
 	private final String description;
@@ -89,103 +86,50 @@ public class FilterField<B, T> implements Serializable
 		{
 			this.availableComparators.add(comparator);
 		}
-		else
-		{
-			LogManager.getLogger(FilterField.class)
-				.warn(
-					"The {} is already available in the '{}' field.",
-					comparator.getClass().getSimpleName(),
-					this.description);
-		}
 		
 		return new FilterField<>(this.valueProvider, this.description, this.type, this.availableComparators);
 	}
 	
-	/**
-	 * Add an equal comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withEqualComparator()
 	{
 		return this.withAvailableComparator(EqualComparator.getInstance());
 	}
 	
-	/**
-	 * Add a not equal comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withNotEqualComparator()
 	{
 		return this.withAvailableComparator(NotEqualComparator.getInstance());
 	}
 	
-	/**
-	 * Add a contains comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withContainsComparator()
 	{
 		return this.withAvailableComparator(ContainsComparator.getInstance());
 	}
 	
-	/**
-	 * Add a greater than comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withGreaterThanComparator()
 	{
 		return this.withAvailableComparator(GreaterThanComparator.getInstance());
 	}
 	
-	/**
-	 * Add an is after comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withIsAfterComparator()
 	{
 		return this.withAvailableComparator(IsAfterComparator.getInstance());
 	}
 	
-	/**
-	 * Add a is before comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withIsBeforeComparator()
 	{
 		return this.withAvailableComparator(IsBeforeComparator.getInstance());
 	}
 	
-	/**
-	 * Add a less than comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withLessThanComparator()
 	{
 		return this.withAvailableComparator(LessThanComparator.getInstance());
 	}
 	
-	/**
-	 * Add a not contains comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withNotContainsComparator()
 	{
 		return this.withAvailableComparator(NotContainsComparator.getInstance());
 	}
 	
-	/**
-	 * Add an is between comparator to this filter field.
-	 *
-	 * @return Returns this filter field.
-	 */
 	public FilterField<B, T> withIsBetweenComparator()
 	{
 		return this.withAvailableComparator(IsBetweenComparator.getInstance());

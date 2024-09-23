@@ -15,14 +15,10 @@
  */
 package software.xdev.vaadin.comparators;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.function.Predicate;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.vaadin.flow.function.ValueProvider;
 
@@ -34,7 +30,6 @@ import software.xdev.vaadin.comparators.utl.TypeHelper;
  */
 public final class NotEqualComparator implements FilterComparator
 {
-    private static final Logger LOGGER = LogManager.getLogger(NotEqualComparator.class);
     private static NotEqualComparator instance;
 
     private NotEqualComparator()
@@ -70,8 +65,6 @@ public final class NotEqualComparator implements FilterComparator
     @Override
     public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
     {
-        LOGGER.debug("Checking if the item is not equal to {}", searchQuery);
-        
         return item ->
         {
             final T apply = provider.apply(item);
@@ -80,37 +73,31 @@ public final class NotEqualComparator implements FilterComparator
 
             if (apply instanceof final String strValue)
             {
-                LOGGER.debug("Item is an instance of String.");
                 return !strValue.equalsIgnoreCase(searchQuery);
             }
 
             if (apply instanceof final Number numb && TypeHelper.isDouble(searchQuery))
             {
-                LOGGER.debug("Item is an instance of Number.");
                 return numb.doubleValue() != (Double.parseDouble(searchQuery));
             }
 
             if (apply instanceof final LocalDate date && TypeHelper.isLocalDate(searchQuery))
             {
-                LOGGER.debug("Item is an instance of LocalDate.");
                 return !LocalDate.from(date).equals(LocalDate.parse(searchQuery));
             }
 
             if (apply instanceof final LocalDateTime date && TypeHelper.isLocalDateTime(searchQuery))
             {
-                LOGGER.debug("Item is an instance of LocalDateTime.");
                 return !LocalDateTime.from(date).equals(LocalDateTime.parse(searchQuery));
             }
 
             if (apply instanceof final Enum<?> enm)
             {
-                LOGGER.debug("Item is an instance of Enum.");
                 return !enm.toString().equals(searchQuery);
             }
 
             if (apply instanceof final Boolean bool)
             {
-                LOGGER.debug("Item is an instance of bool.");
                 return bool != Boolean.parseBoolean(searchQuery);
             }
 

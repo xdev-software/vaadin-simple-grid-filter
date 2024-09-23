@@ -17,47 +17,47 @@ package software.xdev.vaadin.model;
 
 import software.xdev.vaadin.comparators.FilterComparator;
 
+
 /**
  * @param <B> The bean.
  * @param <T> The type or field to use.
  */
 public class FilterCondition<B, T>
 {
-    private final FilterField<B, T> item;
-    private final FilterComparator selectedCondition;
-    private final String inputValue;
-
-
-    public FilterCondition(final FilterField<B, T> item,
-                           final FilterComparator selectedCondition,
-                           final String inputValue)
-    {
-        this.item = item;
-        this.selectedCondition = selectedCondition;
-        this.inputValue = inputValue;
-    }
-
-    public FilterField<B, T> getItem()
-    {
-        return this.item;
-    }
-
-    public FilterComparator getSelectedCondition()
-    {
-        return this.selectedCondition;
-    }
-
-
-    public String getInputValue()
-    {
-        return this.inputValue;
-    }
-
-    @Override
-    public String toString()
-    {
-        return this.item.getDescription()
-               + " " + this.selectedCondition.getDescription()
-               + " " + this.inputValue;
-    }
+	private final FilterField<B, T> item;
+	private final FilterComparator selectedCondition;
+	private final String inputValue;
+	
+	public FilterCondition(
+		final FilterField<B, T> item,
+		final FilterComparator selectedCondition,
+		final String inputValue)
+	{
+		this.item = item;
+		this.selectedCondition = selectedCondition;
+		this.inputValue = inputValue;
+	}
+	
+	public FilterField<B, T> getItem()
+	{
+		return this.item;
+	}
+	
+	public FilterComparator getSelectedCondition()
+	{
+		return this.selectedCondition;
+	}
+	
+	public String getInputValue()
+	{
+		return this.inputValue;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return this.item.getDescription()
+			+ " " + this.selectedCondition.getDescription()
+			+ " " + this.inputValue;
+	}
 }

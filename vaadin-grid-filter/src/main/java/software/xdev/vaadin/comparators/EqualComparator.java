@@ -20,9 +20,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.function.Predicate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.function.ValueProvider;
 
 import software.xdev.vaadin.comparators.utl.TypeHelper;
@@ -33,87 +30,78 @@ import software.xdev.vaadin.comparators.utl.TypeHelper;
  */
 public final class EqualComparator implements FilterComparator
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EqualComparator.class);
-    private static EqualComparator instance;
-
-    private EqualComparator()
-    {
-    }
-
-    public static EqualComparator getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new EqualComparator();
-        }
-
-        return instance;
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "is equals to";
-    }
-
-    @Override
-    public boolean isApplicable(final Class<?> clazz)
-    {
-        return Number.class.isAssignableFrom(clazz)
-               || String.class.isAssignableFrom(clazz)
-               || TemporalAccessor.class.isAssignableFrom(clazz)
-               || Enum.class.isAssignableFrom(clazz)
-               || Boolean.class.isAssignableFrom(clazz);
-    }
-
-    @Override
-    public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
-    {
-        LOGGER.debug("Checking if the item is equals to {}", searchQuery);
-        
-        return item ->
-        {
-            final T apply = provider.apply(item);
-
-            TypeHelper.checkIfTypeIsApplicable(this, apply.getClass());
-
-            if (apply instanceof final String strValue)
-            {
-                LOGGER.debug("Item is an instance of String.");
-                return strValue.equalsIgnoreCase(searchQuery);
-            }
-
-            if (apply instanceof final Number numb && TypeHelper.isDouble(searchQuery))
-            {
-                LOGGER.debug("Item is an instance of Number.");
-                return numb.doubleValue() == (Double.parseDouble(searchQuery));
-            }
-
-            if (apply instanceof final LocalDate date && TypeHelper.isLocalDate(searchQuery))
-            {
-                LOGGER.debug("Item is an instance of LocalDate.");
-                return LocalDate.from(date).equals(LocalDate.parse(searchQuery));
-            }
-
-            if (apply instanceof final LocalDateTime date && TypeHelper.isLocalDateTime(searchQuery))
-            {
-                LOGGER.debug("Item is an instance of LocalDateTime.");
-                return LocalDateTime.from(date).equals(LocalDateTime.parse(searchQuery));
-            }
-
-            if (apply instanceof final Enum<?> enm)
-            {
-                LOGGER.debug("Item is an instance of Enum.");
-                return enm.toString().equals(searchQuery);
-            }
-
-            if (apply instanceof final Boolean bool)
-            {
-                LOGGER.debug("Item is an instance of Boolean.");
-                return bool == Boolean.parseBoolean(searchQuery);
-            }
-
-            return apply.equals(searchQuery);
-        };
-    }
+	private static EqualComparator instance;
+	
+	private EqualComparator()
+	{
+	}
+	
+	public static EqualComparator getInstance()
+	{
+		if(instance == null)
+		{
+			instance = new EqualComparator();
+		}
+		
+		return instance;
+	}
+	
+	@Override
+	public String getDescription()
+	{
+		return "is equals to";
+	}
+	
+	@Override
+	public boolean isApplicable(final Class<?> clazz)
+	{
+		return Number.class.isAssignableFrom(clazz)
+			|| String.class.isAssignableFrom(clazz)
+			|| TemporalAccessor.class.isAssignableFrom(clazz)
+			|| Enum.class.isAssignableFrom(clazz)
+			|| Boolean.class.isAssignableFrom(clazz);
+	}
+	
+	@Override
+	public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
+	{
+		return item ->
+		{
+			final T apply = provider.apply(item);
+			
+			TypeHelper.checkIfTypeIsApplicable(this, apply.getClass());
+			
+			if(apply instanceof final String strValue)
+			{
+				return strValue.equalsIgnoreCase(searchQuery);
+			}
+			
+			if(apply instanceof final Number numb && TypeHelper.isDouble(searchQuery))
+			{
+				return numb.doubleValue() == (Double.parseDouble(searchQuery));
+			}
+			
+			if(apply instanceof final LocalDate date && TypeHelper.isLocalDate(searchQuery))
+			{
+				return LocalDate.from(date).equals(LocalDate.parse(searchQuery));
+			}
+			
+			if(apply instanceof final LocalDateTime date && TypeHelper.isLocalDateTime(searchQuery))
+			{
+				return LocalDateTime.from(date).equals(LocalDateTime.parse(searchQuery));
+			}
+			
+			if(apply instanceof final Enum<?> enm)
+			{
+				return enm.toString().equals(searchQuery);
+			}
+			
+			if(apply instanceof final Boolean bool)
+			{
+				return bool == Boolean.parseBoolean(searchQuery);
+			}
+			
+			return apply.equals(searchQuery);
+		};
+	}
 }

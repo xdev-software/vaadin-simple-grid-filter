@@ -15,38 +15,44 @@
  */
 package software.xdev.vaadin.model;
 
-import com.vaadin.flow.function.ValueProvider;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.vaadin.flow.function.ValueProvider;
+
+
 public final class FilterProvider
 {
-    private FilterProvider()
-    {
-    }
-
-    public interface StringProvider<T> extends ValueProvider<T, String>
-    {
-    }
-
-    public interface NumberProvider<T> extends ValueProvider<T, Number>
-    {
-    }
-
-    public interface LocalDateProvider<T> extends ValueProvider<T, LocalDate>
-    {
-    }
-
-    public interface LocalDateTimeProvider<T> extends ValueProvider<T, LocalDateTime>
-    {
-    }
-
-    public interface BooleanProvider<T> extends ValueProvider<T, Boolean>
-    {
-    }
-
-    public interface EnumProvider<T> extends ValueProvider<T, Enum>
-    {
-    }
+	private FilterProvider()
+	{
+	}
+	
+	public interface StringProvider<T> extends ValueProvider<T, String>
+	{
+	}
+	
+	
+	public interface NumberProvider<T> extends ValueProvider<T, Number>
+	{
+	}
+	
+	
+	public interface LocalDateProvider<T> extends ValueProvider<T, LocalDate>
+	{
+	}
+	
+	
+	public interface LocalDateTimeProvider<T> extends ValueProvider<T, LocalDateTime>
+	{
+	}
+	
+	
+	public interface BooleanProvider<T> extends ValueProvider<T, Boolean>
+	{
+	}
+	
+	
+	public interface EnumProvider<T> extends ValueProvider<T, Enum>
+	{
+	}
 }

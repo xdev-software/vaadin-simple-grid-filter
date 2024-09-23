@@ -17,6 +17,7 @@ package software.xdev.vaadin.model;
 
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
 
+
 /**
  * Class for creating a FilterField with preconfigured conditions.
  *
@@ -24,111 +25,81 @@ import software.xdev.vaadin.builder.CustomizableFilterBuilder;
  */
 public class SimpleFilterField<T>
 {
-    private static final CustomizableFilterBuilder BUILDER = CustomizableFilterBuilder.builder();
-    private final FilterField<T, ?> filterField;
-
-    /**
-     * Is used to create a new field for filtering with default conditions.
-     *
-     * @param provider    The field of the bean with type String.
-     * @param description The name of the selectable field.
-     */
-    public SimpleFilterField(final FilterProvider.StringProvider<T> provider,
-                             final String description)
-    {
-        this.filterField =
-                BUILDER.withValueProvider(provider, description)
-                        .withNotEqualComparator()
-                        .withEqualComparator()
-                        .withContainsComparator()
-                        .withNotContainsComparator();
-    }
-
-    /**
-     * Is used to create a new field for filtering with default conditions.
-     *
-     * @param provider    The field of the bean with type Enum.
-     * @param description The name of the selectable field.
-     */
-    public SimpleFilterField(final FilterProvider.EnumProvider<T> provider,
-                             final String description,
-                             final Enum<?>[] enumValues)
-    {
-        this.filterField = BUILDER
-                .withValueProvider(provider, description, enumValues)
-                .withEqualComparator()
-                .withNotEqualComparator()
-                .withContainsComparator()
-                .withNotContainsComparator();
-    }
-
-    /**
-     * Is used to create a new field for filtering with default conditions.
-     *
-     * @param provider    The field of the bean with type Number.
-     * @param description The name of the selectable field.
-     */
-    public SimpleFilterField(final FilterProvider.NumberProvider<T> provider,
-                             final String description)
-    {
-        this.filterField = BUILDER
-                .withValueProvider(provider, description)
-                .withEqualComparator()
-                .withNotEqualComparator()
-                .withContainsComparator()
-                .withNotContainsComparator()
-                .withLessThanComparator()
-                .withGreaterThanComparator();
-    }
-
-    /**
-     * Is used to create a new field for filtering with default conditions.
-     *
-     * @param provider    The field of the bean with type LocalDate.
-     * @param description The name of the selectable field.
-     */
-    public SimpleFilterField(final FilterProvider.LocalDateProvider<T> provider,
-                             final String description)
-    {
-        this.filterField = BUILDER
-                .withValueProvider(provider, description)
-                .withIsBeforeComparator()
-            .withIsAfterComparator()
-            .withIsBetweenComparator();
-    }
-
-    /**
-     * Is used to create a new field for filtering with default conditions.
-     *
-     * @param provider    The field of the bean with type LocalDateTime.
-     * @param description The name of the selectable field.
-     */
-    public SimpleFilterField(final FilterProvider.LocalDateTimeProvider<T> provider,
-                             final String description)
-    {
-        this.filterField = BUILDER
-                .withValueProvider(provider, description)
-                .withIsBeforeComparator()
-                .withIsAfterComparator();
-    }
-
-    /**
-     * Is used to create a new field for filtering with default conditions.
-     *
-     * @param provider    The field of the bean with type Boolean.
-     * @param description The name of the selectable field.
-     */
-    public SimpleFilterField(final FilterProvider.BooleanProvider<T> provider,
-                             final String description)
-    {
-        this.filterField = BUILDER
-                .withValueProvider(provider, description)
-                .withEqualComparator()
-                .withNotEqualComparator();
-    }
-
-    public FilterField<T, ?> getFilterField()
-    {
-        return this.filterField;
-    }
+	private static final CustomizableFilterBuilder BUILDER = CustomizableFilterBuilder.builder();
+	private final FilterField<T, ?> filterField;
+	
+	public SimpleFilterField(
+		final FilterProvider.StringProvider<T> provider,
+		final String description)
+	{
+		this.filterField =
+			BUILDER.withValueProvider(provider, description)
+				.withNotEqualComparator()
+				.withEqualComparator()
+				.withContainsComparator()
+				.withNotContainsComparator();
+	}
+	
+	public SimpleFilterField(
+		final FilterProvider.EnumProvider<T> provider,
+		final String description,
+		final Enum<?>[] enumValues)
+	{
+		this.filterField = BUILDER
+			.withValueProvider(provider, description, enumValues)
+			.withEqualComparator()
+			.withNotEqualComparator()
+			.withContainsComparator()
+			.withNotContainsComparator();
+	}
+	
+	public SimpleFilterField(
+		final FilterProvider.NumberProvider<T> provider,
+		final String description)
+	{
+		this.filterField = BUILDER
+			.withValueProvider(provider, description)
+			.withEqualComparator()
+			.withNotEqualComparator()
+			.withContainsComparator()
+			.withNotContainsComparator()
+			.withLessThanComparator()
+			.withGreaterThanComparator();
+	}
+	
+	public SimpleFilterField(
+		final FilterProvider.LocalDateProvider<T> provider,
+		final String description)
+	{
+		this.filterField = BUILDER
+			.withValueProvider(provider, description)
+			.withIsBeforeComparator()
+			.withIsAfterComparator()
+			.withIsBetweenComparator();
+	}
+	
+	public SimpleFilterField(
+		final FilterProvider.LocalDateTimeProvider<T> provider,
+		final String description)
+	{
+		this.filterField = BUILDER
+			.withValueProvider(provider, description)
+			.withIsBeforeComparator()
+			.withIsAfterComparator();
+	}
+	
+	public SimpleFilterField(
+		final FilterProvider.BooleanProvider<T> provider,
+		final String description)
+	{
+		this.filterField = BUILDER
+			.withValueProvider(provider, description)
+			.withEqualComparator()
+			.withNotEqualComparator();
+	}
+	
+	public FilterField<T, ?> getFilterField()
+	{
+		return this.filterField;
+	}
 }

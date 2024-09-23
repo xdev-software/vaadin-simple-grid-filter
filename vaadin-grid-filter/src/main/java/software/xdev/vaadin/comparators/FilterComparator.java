@@ -15,18 +15,19 @@
  */
 package software.xdev.vaadin.comparators;
 
+import java.util.function.Predicate;
+
 import com.vaadin.flow.function.ValueProvider;
 
-import java.util.function.Predicate;
 
 /**
  * Interface for comparator.
  */
 public interface FilterComparator
 {
-    String getDescription();
-
-    boolean isApplicable(Class<?> clazz);
-
-    <B, T> Predicate<B> compare(ValueProvider<B, T> provider, String searchQuery);
+	String getDescription();
+	
+	boolean isApplicable(Class<?> clazz);
+	
+	<B, T> Predicate<B> compare(ValueProvider<B, T> provider, String searchQuery);
 }

@@ -15,14 +15,10 @@
  */
 package software.xdev.vaadin.comparators;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.function.Predicate;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.function.ValueProvider;
 
@@ -34,59 +30,54 @@ import software.xdev.vaadin.comparators.utl.TypeHelper;
  */
 public final class IsAfterComparator implements FilterComparator
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(IsAfterComparator.class);
-    private static IsAfterComparator instance;
-
-    private IsAfterComparator()
-    {
-    }
-
-    public static IsAfterComparator getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new IsAfterComparator();
-        }
-
-        return instance;
-    }
-
-    @Override
-    public String getDescription()
-    {
-        return "is after";
-    }
-
-    @Override
-    public boolean isApplicable(final Class<?> clazz)
-    {
-        return TemporalAccessor.class.isAssignableFrom(clazz);
-    }
-
-    @Override
-    public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
-    {
-        LOGGER.debug("Checking if the item is after {}", searchQuery);
-        
-        return item ->
-        {
-            final T apply = provider.apply(item);
-
-            TypeHelper.checkIfTypeIsApplicable(this, apply.getClass());
-
-            if (apply instanceof final LocalDate date && TypeHelper.isLocalDate(searchQuery))
-            {
-                LOGGER.debug("Item is an instance of LocalDate.");
-                return LocalDate.from(date).isAfter(LocalDate.parse(searchQuery));
-            }
-
-            if (apply instanceof final LocalDateTime date && TypeHelper.isLocalDateTime(searchQuery))
-            {
-                LOGGER.debug("Item is an instance of LocalDateTime.");
-                return LocalDateTime.from(date).isAfter(LocalDateTime.parse(searchQuery));
-            }
-
-            return apply.equals(searchQuery);
-        };
-    }
+	private static IsAfterComparator instance;
+	
+	private IsAfterComparator()
+	{
+	}
+	
+	public static IsAfterComparator getInstance()
+	{
+		if(instance == null)
+		{
+			instance = new IsAfterComparator();
+		}
+		
+		return instance;
+	}
+	
+	@Override
+	public String getDescription()
+	{
+		return "is after";
+	}
+	
+	@Override
+	public boolean isApplicable(final Class<?> clazz)
+	{
+		return TemporalAccessor.class.isAssignableFrom(clazz);
+	}
+	
+	@Override
+	public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
+	{
+		return item ->
+		{
+			final T apply = provider.apply(item);
+			
+			TypeHelper.checkIfTypeIsApplicable(this, apply.getClass());
+			
+			if(apply instanceof final LocalDate date && TypeHelper.isLocalDate(searchQuery))
+			{
+				return LocalDate.from(date).isAfter(LocalDate.parse(searchQuery));
+			}
+			
+			if(apply instanceof final LocalDateTime date && TypeHelper.isLocalDateTime(searchQuery))
+			{
+				return LocalDateTime.from(date).isAfter(LocalDateTime.parse(searchQuery));
+			}
+			
+			return apply.equals(searchQuery);
+		};
+	}
 }

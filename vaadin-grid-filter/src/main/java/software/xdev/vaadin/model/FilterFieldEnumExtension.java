@@ -15,10 +15,12 @@
  */
 package software.xdev.vaadin.model;
 
+import java.util.List;
+
 import com.vaadin.flow.function.ValueProvider;
+
 import software.xdev.vaadin.comparators.FilterComparator;
 
-import java.util.List;
 
 /**
  * Extension of the FilterField with enum compatibility.
@@ -28,37 +30,37 @@ import java.util.List;
  */
 public class FilterFieldEnumExtension<B, T extends Enum<?>> extends FilterField<B, T>
 {
-    private final Enum<?>[] enumValues;
-
-    public FilterFieldEnumExtension(
-            final ValueProvider<B, T> valueProvider,
-            final String description,
-            final Class<T> type,
-            final List<FilterComparator> availableComparators,
-            final Enum<?>[] enumValues)
-    {
-        super(valueProvider, description, type, availableComparators);
-        this.enumValues = enumValues;
-    }
-
-    public Enum[] getEnumValues()
-    {
-        return this.enumValues;
-    }
-
-    @Override
-    public FilterFieldEnumExtension<B, T> withAvailableComparator(final FilterComparator comparator)
-    {
-        if (this.getAvailableComparators().stream().noneMatch(c -> c.getClass() == comparator.getClass()))
-        {
-            this.getAvailableComparators().add(comparator);
-        }
-
-        return new FilterFieldEnumExtension<>(
-                this.getValueProvider(),
-                this.getDescription(),
-                this.getType(),
-                this.getAvailableComparators(),
-                this.enumValues);
-    }
+	private final Enum<?>[] enumValues;
+	
+	public FilterFieldEnumExtension(
+		final ValueProvider<B, T> valueProvider,
+		final String description,
+		final Class<T> type,
+		final List<FilterComparator> availableComparators,
+		final Enum<?>[] enumValues)
+	{
+		super(valueProvider, description, type, availableComparators);
+		this.enumValues = enumValues;
+	}
+	
+	public Enum[] getEnumValues()
+	{
+		return this.enumValues;
+	}
+	
+	@Override
+	public FilterFieldEnumExtension<B, T> withAvailableComparator(final FilterComparator comparator)
+	{
+		if(this.getAvailableComparators().stream().noneMatch(c -> c.getClass() == comparator.getClass()))
+		{
+			this.getAvailableComparators().add(comparator);
+		}
+		
+		return new FilterFieldEnumExtension<>(
+			this.getValueProvider(),
+			this.getDescription(),
+			this.getType(),
+			this.getAvailableComparators(),
+			this.enumValues);
+	}
 }

@@ -47,9 +47,6 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Key;
@@ -91,8 +88,6 @@ import software.xdev.vaadin.utl.QueryParameterUtil;
  */
 public class FilterComponent<T> extends Composite<VerticalLayout> implements BeforeEnterObserver
 {
-	private static final Logger LOGGER = LogManager.getLogger(FilterComponent.class);
-	
 	public static final String CHIP_BADGE_FILTER_COMPONENT = "chipFilterComponent";
 	public static final String BTN_ACCEPT_FILTER_FILTER_COMPONENT = "btnAcceptFilterFilterComponent";
 	public static final String TXT_SEARCH_QUERY_FILTER_COMPONENT = "txtSearchQueryFilterComponent";
@@ -227,8 +222,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				{
 					this.selSearchQuery.setVisible(false);
 					this.txtSearchQuery.setVisible(true);
-					
-					LOGGER.debug("Switched to input field to text field.");
 				}
 				else if(!isSelSearchQueryVisible)
 				{
@@ -245,7 +238,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					this.dateRangePickerQuery.setVisible(true);
 					this.dateSearchQuery.setVisible(false);
 					
-					LOGGER.debug("Switched input field to date range picker.");
 					// Validating if the accept filter button should be activated because the date range picker
 					// has already a value by default
 					this.btnAcceptFilter.setEnabled(this.shouldTheAcceptButtonBeEnabled());
@@ -257,8 +249,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				}
 			}
 		}
-		
-		LOGGER.debug("Operator changed.");
 	}
 	
 	private void onShowFilterInput()
@@ -293,8 +283,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				this.btnCancelFilter,
 				this.btnAcceptFilter
 			);
-			
-			LOGGER.debug("Showing available filters.");
 		}
 	}
 	
@@ -303,7 +291,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	 */
 	private void onAcceptFilter()
 	{
-		LOGGER.debug("Filter accepted.");
 		final String userInput = this.getValueFromVisibleComponent();
 		
 		final ChipBadgeExtension<FilterCondition<T, ?>> badge;
@@ -400,7 +387,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					
 					// Remove filter, update grid
 					this.removeChipBadgeCondition(badge);
-					LOGGER.debug("Editing filter now...");
 				}
 			});
 		}
@@ -439,8 +425,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					badge.setBadgeId(DELETED_INITIAL_CONDITION_STRING);
 					this.addQueryParameter(badge);
 				}
-				
-				LOGGER.debug("Filter removed.");
 			});
 		}
 	}
@@ -467,7 +451,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				}
 				catch(final DateTimeParseException e)
 				{
-					LOGGER.error("Error parsing local date range into chipBadge component text.", e);
 					startDate = LocalDate.MIN;
 					endDate = LocalDate.MAX;
 				}
@@ -488,8 +471,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					dateString = startDate + " and " + endDate;
 				}
 				
-				LOGGER.debug("Formatted date range query string to {}.", dateString);
-				
 				return createChipComponentString(tFilterCondition, dateString);
 			});
 		}
@@ -505,7 +486,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				}
 				catch(final DateTimeParseException e)
 				{
-					LOGGER.error("Error parsing local date into chipBadge component text.", e);
 					localDate = LocalDate.MIN;
 				}
 				
@@ -520,8 +500,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				{
 					dateString = localDate.toString();
 				}
-				
-				LOGGER.debug("Formatted date query string to {}.", dateString);
 				
 				return createChipComponentString(tFilterCondition, dateString);
 			});
@@ -540,7 +518,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					}
 					catch(final DateTimeParseException e)
 					{
-						LOGGER.error("Error parsing local date or local date time into chipBadge component text.", e);
 						localDateTime = LocalDateTime.MIN;
 						localDate = LocalDate.MIN;
 					}
@@ -565,8 +542,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					
 					dateString += " " + localDateTime.toLocalTime();
 					
-					LOGGER.debug("Formatted date time search query string to {}.", dateString);
-					
 					return createChipComponentString(tFilterCondition, dateString);
 				}
 			);
@@ -589,8 +564,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	 */
 	private String getValueFromVisibleComponent()
 	{
-		LOGGER.debug("Getting value from visible component.");
-		
 		if(this.nmbSearchQuery.isVisible())
 		{
 			return this.nmbSearchQuery.getValue().toString();
@@ -707,22 +680,12 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			if(filterField instanceof FilterFieldEnumExtension)
 			{
 				this.setEnumSelectValues(this.selFields.getValue());
-				
-				LOGGER.debug("Set the values for the enum selection.");
 			}
 			else if(filterField.getType() == Boolean.class)
 			{
 				this.selSearchQuery.setItems(new ArrayList<>(Arrays.asList("true", "false")));
-				
-				LOGGER.debug("Set the values for the boolean selection.");
-			}
-			else
-			{
-				LOGGER.debug("Filter field is not an instance of FilterFieldTypeExtension or a type of boolean.");
 			}
 		}
-		
-		LOGGER.debug("Field changed.");
 	}
 	
 	private void setInputComponentVisibility(final Class<?> type)
@@ -754,14 +717,10 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		{
 			this.txtSearchQuery.setVisible(true);
 		}
-		
-		LOGGER.debug("The visibility for the input component was set.");
 	}
 	
 	private void updateGridFilter()
 	{
-		LOGGER.debug("Updating grid filter.");
-		
 		if(this.chipBadges.isEmpty())
 		{
 			this.dataGrid.getListDataView().removeFilters();

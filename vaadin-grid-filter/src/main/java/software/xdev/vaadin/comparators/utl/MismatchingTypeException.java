@@ -20,8 +20,8 @@ package software.xdev.vaadin.comparators.utl;
  */
 public class MismatchingTypeException extends RuntimeException
 {
-    public MismatchingTypeException(final String message)
-    {
-        super(message);
-    }
+	public MismatchingTypeException(final String message)
+	{
+		super(message);
+	}
 }

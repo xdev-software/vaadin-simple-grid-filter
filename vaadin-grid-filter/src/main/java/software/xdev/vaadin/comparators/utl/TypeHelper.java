@@ -21,9 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import software.xdev.vaadin.comparators.FilterComparator;
 
 /**
@@ -31,8 +28,6 @@ import software.xdev.vaadin.comparators.FilterComparator;
  */
 public final class TypeHelper
 {
-    private static final Logger LOGGER = LogManager.getLogger(TypeHelper.class);
-
     private TypeHelper()
     {
     }
@@ -48,7 +43,6 @@ public final class TypeHelper
         }
         catch (final NumberFormatException e)
         {
-            LOGGER.debug("This string could not be parsed to Double: {}", str, e);
             return false;
         }
     }
@@ -59,14 +53,11 @@ public final class TypeHelper
         
         try
         {
-            LOGGER.debug("This string has to be parsed to LocalDate: {}", str);
             LocalDate.parse(str);
-            LOGGER.debug("String can be parsed into LocalDate.");
             return true;
         }
         catch (final DateTimeParseException e)
         {
-            LOGGER.debug("String could not be parsed into LocalDate.", e);
             return false;
         }
     }
@@ -77,15 +68,11 @@ public final class TypeHelper
         
         try
         {
-            
-            LOGGER.debug("This string has to be parsed to LocalDateTime: {}", str);
             LocalDateTime.parse(str, DateTimeFormatter.ISO_DATE_TIME);
-            LOGGER.debug("String can be parsed into LocalDateTime.");
             return true;
         }
         catch (final DateTimeParseException e)
         {
-            LOGGER.debug("String could not be parsed into LocalDateTime.", e);
             return false;
         }
     }

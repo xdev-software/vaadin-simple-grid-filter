@@ -38,7 +38,7 @@ public class ChipBadge<T> extends Composite<Span> implements HasSize, HasStyle
 {
 	private static final String CHIP_BADGE_CONTAINER_CSS = "chipbadge-container";
 	private static final String CHIP_BADGE_LABEL_CSS = "chipbadge-label";
-	private static final String CHIP_BADGE_DELETE_BTN_CSS = "chipbadge-delte-btn";
+	private static final String CHIP_BADGE_DELETE_BTN_CSS = "chipbadge-delete-btn";
 	
 	protected T item;
 	protected ItemLabelGenerator<T> itemLabelGenerator = Object::toString;
@@ -57,7 +57,6 @@ public class ChipBadge<T> extends Composite<Span> implements HasSize, HasStyle
 	
 	private void initUI()
 	{
-		
 		this.setClassName(CHIP_BADGE_CONTAINER_CSS);
 		
 		this.label.setClassName(CHIP_BADGE_LABEL_CSS);

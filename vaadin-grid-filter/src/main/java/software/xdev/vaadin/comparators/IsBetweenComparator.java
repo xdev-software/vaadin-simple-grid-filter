@@ -18,9 +18,6 @@ package software.xdev.vaadin.comparators;
 import java.time.LocalDate;
 import java.util.function.Predicate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.function.ValueProvider;
 
 import software.xdev.vaadin.comparators.utl.IncorrectSearchQueryFormatException;
@@ -35,7 +32,6 @@ public final class IsBetweenComparator implements FilterComparator
 	public static final String IS_BETWEEN_COMPARATOR_DESCRIPTION = "is between";
 	public static final String IS_BETWEEN_COMPARATOR_SEPARATOR = "#";
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(IsAfterComparator.class);
 	private static IsBetweenComparator instance;
 	
 	private IsBetweenComparator()
@@ -85,8 +81,6 @@ public final class IsBetweenComparator implements FilterComparator
 				final String[] dates = searchQuery.split(IS_BETWEEN_COMPARATOR_SEPARATOR);
 				startDate = dates[0];
 				endDate = dates[1];
-				
-				LOGGER.debug("Checking if the item is between {} and {}", startDate, endDate);
 			}
 			catch(final ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException)
 			{
@@ -98,7 +92,6 @@ public final class IsBetweenComparator implements FilterComparator
 				&& TypeHelper.isLocalDate(startDate)
 				&& TypeHelper.isLocalDate(endDate))
 			{
-				LOGGER.debug("Item is an instance of LocalDate.");
 				return (LocalDate.from(date).isAfter(LocalDate.parse(startDate))
 					|| LocalDate.from(date).isEqual(LocalDate.parse(startDate)))
 					&& (LocalDate.from(date).isBefore(LocalDate.parse(endDate))
