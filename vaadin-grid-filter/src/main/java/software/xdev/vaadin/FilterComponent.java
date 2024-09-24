@@ -432,7 +432,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	/**
 	 * Format chip badge input text for LocalDate and LocalDateTime.
 	 */
-	// TODO: Catching the parse errors is fixed in Branch FLX-353
 	private void formatLocalDateChipBadgeText(final ChipBadge<FilterCondition<T, ?>> chipBadge)
 	{
 		if(this.dateRangePickerQuery.isVisible()
@@ -440,7 +439,8 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		{
 			chipBadge.setItemLabelGenerator((ItemLabelGenerator<FilterCondition<T, ?>>)tFilterCondition ->
 			{
-				LocalDate startDate, endDate;
+				LocalDate startDate;
+				LocalDate endDate;
 				
 				try
 				{
@@ -606,12 +606,10 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		}
 		else if(this.dateSearchQuery.isVisible())
 		{
-			// FIXME: Catch parse errors
 			this.dateSearchQuery.setValue(LocalDate.parse(searchQuery));
 		}
 		else if(this.dateTimeSearchQuery.isVisible())
 		{
-			// FIXME: Catch parse errors
 			this.dateTimeSearchQuery.setValue(LocalDateTime.parse(searchQuery));
 		}
 		else if(this.selSearchQuery.isVisible())
