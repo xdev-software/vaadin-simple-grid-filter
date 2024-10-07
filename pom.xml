@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>software.xdev</groupId>
-	<artifactId>template-placeholder-root</artifactId>
+	<artifactId>vaadin-grid-filter-root</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -15,8 +15,8 @@
 	</organization>
 
 	<modules>
-		<module>template-placeholder</module>
-		<module>template-placeholder-demo</module>
+		<module>vaadin-grid-filter</module>
+		<module>vaadin-grid-filter-demo</module>
 	</modules>
 
 	<properties>
@@ -45,7 +45,7 @@
 							<dependency>
 								<groupId>com.puppycrawl.tools</groupId>
 								<artifactId>checkstyle</artifactId>
-								<version>10.18.1</version>
+								<version>10.18.2</version>
 							</dependency>
 						</dependencies>
 						<configuration>
@@ -82,12 +82,12 @@
 							<dependency>
 								<groupId>net.sourceforge.pmd</groupId>
 								<artifactId>pmd-core</artifactId>
-								<version>7.5.0</version>
+								<version>7.6.0</version>
 							</dependency>
 							<dependency>
 								<groupId>net.sourceforge.pmd</groupId>
 								<artifactId>pmd-java</artifactId>
-								<version>7.5.0</version>
+								<version>7.6.0</version>
 							</dependency>
 						</dependencies>
 					</plugin>
