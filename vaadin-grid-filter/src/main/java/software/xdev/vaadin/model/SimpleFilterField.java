@@ -64,7 +64,9 @@ public class SimpleFilterField<T>
 			.withContainsComparator()
 			.withNotContainsComparator()
 			.withLessThanComparator()
-			.withGreaterThanComparator();
+			.withLessThanOrEqualsComparator()
+			.withGreaterThanComparator()
+			.withGreaterThanOrEqualsComparator();
 	}
 	
 	public SimpleFilterField(
@@ -74,7 +76,9 @@ public class SimpleFilterField<T>
 		this.filterField = BUILDER
 			.withValueProvider(provider, description)
 			.withIsBeforeComparator()
+			.withIsBeforeOrEqualsComparator()
 			.withIsAfterComparator()
+			.withIsAfterOrEqualsComparator()
 			.withIsBetweenComparator();
 	}
 	
@@ -85,7 +89,9 @@ public class SimpleFilterField<T>
 		this.filterField = BUILDER
 			.withValueProvider(provider, description)
 			.withIsBeforeComparator()
-			.withIsAfterComparator();
+			.withIsBeforeOrEqualsComparator()
+			.withIsAfterComparator()
+			.withIsAfterOrEqualsComparator();
 	}
 	
 	public SimpleFilterField(

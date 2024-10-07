@@ -21,25 +21,22 @@ import com.vaadin.flow.function.ValueProvider;
 
 import software.xdev.vaadin.comparators.utl.TypeHelper;
 
-// CPD-OFF - Fixed in v2
-/**
- * Used for comparison with contains.
- */
-public final class ContainsComparator implements FilterComparator
+
+public final class LessThanOrEqualsComparator implements FilterComparator
 {
-	public static final String CONTAINS_COMPARATOR_DESCRIPTION = "contains";
+	public static final String LESS_THAN_OR_EQUALS_COMPARATOR_DESCRIPTION = "is less than or equals";
 	
-	private static ContainsComparator instance;
+	private static LessThanOrEqualsComparator instance;
 	
-	private ContainsComparator()
+	private LessThanOrEqualsComparator()
 	{
 	}
 	
-	public static ContainsComparator getInstance()
+	public static LessThanOrEqualsComparator getInstance()
 	{
 		if(instance == null)
 		{
-			instance = new ContainsComparator();
+			instance = new LessThanOrEqualsComparator();
 		}
 		
 		return instance;
@@ -48,15 +45,13 @@ public final class ContainsComparator implements FilterComparator
 	@Override
 	public String getDescription()
 	{
-		return CONTAINS_COMPARATOR_DESCRIPTION;
+		return LESS_THAN_OR_EQUALS_COMPARATOR_DESCRIPTION;
 	}
 	
 	@Override
 	public boolean isApplicable(final Class<?> clazz)
 	{
-		return String.class.isAssignableFrom(clazz)
-			|| Number.class.isAssignableFrom(clazz)
-			|| Enum.class.isAssignableFrom(clazz);
+		return Number.class.isAssignableFrom(clazz);
 	}
 	
 	@Override
@@ -68,19 +63,9 @@ public final class ContainsComparator implements FilterComparator
 			
 			TypeHelper.checkIfTypeIsApplicable(this, apply.getClass());
 			
-			if(apply instanceof final String strValue)
-			{
-				return strValue.contains(searchQuery);
-			}
-			
 			if(apply instanceof final Number numb && TypeHelper.isDouble(searchQuery))
 			{
-				return numb.toString().contains(searchQuery);
-			}
-			
-			if(apply instanceof final Enum<?> enm)
-			{
-				return enm.toString().contains(searchQuery);
+				return numb.doubleValue() <= (Double.parseDouble(searchQuery));
 			}
 			
 			return false;

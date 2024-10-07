@@ -23,10 +23,14 @@ import software.xdev.vaadin.comparators.ContainsComparator;
 import software.xdev.vaadin.comparators.EqualComparator;
 import software.xdev.vaadin.comparators.FilterComparator;
 import software.xdev.vaadin.comparators.GreaterThanComparator;
+import software.xdev.vaadin.comparators.GreaterThanOrEqualsComparator;
 import software.xdev.vaadin.comparators.IsAfterComparator;
+import software.xdev.vaadin.comparators.IsAfterOrEqualsComparator;
 import software.xdev.vaadin.comparators.IsBeforeComparator;
+import software.xdev.vaadin.comparators.IsBeforeOrEqualsComparator;
 import software.xdev.vaadin.comparators.IsBetweenComparator;
 import software.xdev.vaadin.comparators.LessThanComparator;
+import software.xdev.vaadin.comparators.LessThanOrEqualsComparator;
 import software.xdev.vaadin.comparators.NotContainsComparator;
 import software.xdev.vaadin.comparators.NotEqualComparator;
 
@@ -133,5 +137,25 @@ public class FilterField<B, T>
 	public FilterField<B, T> withIsBetweenComparator()
 	{
 		return this.withAvailableComparator(IsBetweenComparator.getInstance());
+	}
+	
+	public FilterField<B, T> withLessThanOrEqualsComparator()
+	{
+		return this.withAvailableComparator(LessThanOrEqualsComparator.getInstance());
+	}
+	
+	public FilterField<B, T> withGreaterThanOrEqualsComparator()
+	{
+		return this.withAvailableComparator(GreaterThanOrEqualsComparator.getInstance());
+	}
+	
+	public FilterField<B, T> withIsAfterOrEqualsComparator()
+	{
+		return this.withAvailableComparator(IsAfterOrEqualsComparator.getInstance());
+	}
+	
+	public FilterField<B, T> withIsBeforeOrEqualsComparator()
+	{
+		return this.withAvailableComparator(IsBeforeOrEqualsComparator.getInstance());
 	}
 }

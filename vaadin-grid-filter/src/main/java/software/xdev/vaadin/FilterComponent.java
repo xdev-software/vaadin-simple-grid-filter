@@ -61,11 +61,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.BigDecimalField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.QueryParameters;
 
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
+import software.xdev.vaadin.comparators.ContainsComparator;
 import software.xdev.vaadin.comparators.FilterComparator;
 import software.xdev.vaadin.comparators.utl.DateHelper;
 import software.xdev.vaadin.daterange_picker.business.DateRange;
@@ -102,11 +104,13 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	public static final String BTN_CANCEL_FILTER_FILTER_COMPONENT = "btnCancelFilterFilterComponent";
 	public static final String DATE_RANGE_PICKER_QUERY_FILTER_COMPONENT = "dateRangePickerQueryFilterComponent";
 	public static final String DELETED_INITIAL_CONDITION_STRING = "deletedInitialCondition";
+	public static final String BTN_RESET_FILTER_FILTER_COMPONENT = "btnResetFilterFilterComponent";
 	
 	private final UI ui;
 	private final Button btnAddNewFilter = new Button("Add filter");
 	private final Button btnAcceptFilter = new Button(VaadinIcon.CHECK.create());
 	private final Button btnCancelFilter = new Button(VaadinIcon.CLOSE.create());
+	private final Button btnResetFilter = new Button(VaadinIcon.ROTATE_RIGHT.create());
 	private final Select<FilterField<T, ?>> selFields = new Select<>();
 	private final Select<FilterComparator> selOperations = new Select<>();
 	private final TextField txtSearchQuery = new TextField();
@@ -130,6 +134,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	
 	// Data
 	private final List<ChipBadgeExtension<FilterCondition<T, ?>>> chipBadges = new ArrayList<>();
+	private final List<ChipBadgeExtension<FilterCondition<T, ?>>> initialChipBadges = new ArrayList<>();
 	
 	private int initialConditionIdCounter = 1;
 	private String editingBadgeId;
@@ -160,12 +165,13 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	private void initUI()
 	{
 		final VerticalLayout vlRoot = this.getContent();
-		vlRoot.add(this.btnAddNewFilter, this.hlFilter, this.hlChipBadges);
+		vlRoot.add(new HorizontalLayout(this.btnAddNewFilter, this.btnResetFilter), this.hlFilter, this.hlChipBadges);
 		
 		// click listener
 		this.btnAddNewFilter.addClickListener(e -> this.onShowFilterInput());
 		this.btnCancelFilter.addClickListener(e -> this.hlFilter.removeAll());
 		this.btnAcceptFilter.addClickListener(e -> this.onAcceptFilter());
+		this.btnResetFilter.addClickListener(e -> this.onResetFilter());
 		
 		// value change listener
 		this.selFields.addValueChangeListener(e -> this.onFieldChange(this.selFields.getValue()));
@@ -182,6 +188,11 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			this.btnAcceptFilter.setEnabled(e.getValue() != null && this.selOperations.getValue() != null));
 		this.selSearchQuery.addValueChangeListener(e ->
 			this.btnAcceptFilter.setEnabled(e.getValue() != null && this.selOperations.getValue() != null));
+		this.txtSearchQuery.addValueChangeListener(e ->
+			this.btnAcceptFilter.setEnabled(!e.getValue().isBlank() && this.selOperations.getValue() != null));
+		
+		this.nmbSearchQuery.setValueChangeMode(ValueChangeMode.EAGER);
+		this.txtSearchQuery.setValueChangeMode(ValueChangeMode.EAGER);
 		
 		// renderer
 		this.selFields.setTextRenderer(FilterField::getDescription);
@@ -193,9 +204,12 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		this.btnAcceptFilter.addClickShortcut(Key.ENTER);
 		this.btnCancelFilter.addClickShortcut(Key.ESCAPE);
 		
+		this.btnResetFilter.setEnabled(false);
+		
 		// ids
 		this.btnAcceptFilter.setId(BTN_ACCEPT_FILTER_FILTER_COMPONENT);
 		this.btnCancelFilter.setId(BTN_CANCEL_FILTER_FILTER_COMPONENT);
+		this.btnResetFilter.setId(BTN_RESET_FILTER_FILTER_COMPONENT);
 		this.selFields.setId(SEL_FIELDS_FILTER_COMPONENT);
 		this.selOperations.setId(SEL_OPERATIONS_FILTER_COMPONENT);
 		this.txtSearchQuery.setId(TXT_SEARCH_QUERY_FILTER_COMPONENT);
@@ -205,6 +219,30 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		this.selSearchQuery.setId(SEL_SEARCH_QUERY_FILTER_COMPONENT);
 		this.btnAddNewFilter.setId(BTN_ADD_NEW_FILTER_FILTER_COMPONENT);
 		this.dateRangePickerQuery.setId(DATE_RANGE_PICKER_QUERY_FILTER_COMPONENT);
+	}
+	
+	private void onResetFilter()
+	{
+		final List<ChipBadgeExtension<FilterCondition<T, ?>>> copyChipBadges = new ArrayList<>(this.chipBadges);
+		for(final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge : copyChipBadges)
+		{
+			this.removeChipBadgeCondition(chipBadge);
+		}
+		
+		// Creating the initial filter again
+		this.chipBadges.addAll(this.initialChipBadges);
+		this.initialChipBadges.forEach(this.hlChipBadges::add);
+		this.updateGridFilter();
+		
+		// Remove query parameter
+		this.ui.getPage().fetchCurrentURL(currentUrl ->
+			this.ui
+				.getPage()
+				.getHistory()
+				.replaceState(null, currentUrl.getPath()));
+		
+		// Disable reset button again
+		this.btnResetFilter.setEnabled(false);
 	}
 	
 	private void onOperatorChanged()
@@ -219,10 +257,14 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				
 				// Change to a text field if the field is of type enum with condition 'contains'
 				if(isSelSearchQueryVisible
-					&& this.selOperations.getValue().getDescription().contains("contains"))
+					&& this.selOperations.getValue()
+					.getDescription()
+					.equals(ContainsComparator.CONTAINS_COMPARATOR_DESCRIPTION))
 				{
 					this.selSearchQuery.setVisible(false);
 					this.txtSearchQuery.setVisible(true);
+					
+					this.btnAcceptFilter.setEnabled(this.shouldTheAcceptButtonBeEnabled());
 				}
 				else if(!isSelSearchQueryVisible)
 				{
@@ -260,6 +302,10 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		
 		if(this.hlFilter.getChildren().findAny().isEmpty())
 		{
+			// Needed if the previous condition was an editable initial condition
+			// The editable initial condition makes the cancel button invisible
+			this.btnCancelFilter.setVisible(true);
+			
 			this.selFields.setValue(null);
 			this.selOperations.setItems(Collections.emptyList());
 			this.selOperations.setEnabled(false);
@@ -334,6 +380,9 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		
 		// Removing all filter components after accepting
 		this.hlFilter.removeAll();
+		
+		// When something changes from the initial start, enable the reset button
+		this.btnResetFilter.setEnabled(true);
 	}
 	
 	private ChipBadgeExtension<FilterCondition<T, ?>> createBadgeConditionAndApplyFilter(
@@ -402,7 +451,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		}
 		
 		this.chipBadges.add(badge);
-		this.hlChipBadges.add(badge, badge);
+		this.hlChipBadges.add(badge);
 		
 		this.updateGridFilter();
 		
@@ -421,11 +470,16 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			{
 				this.removeChipBadgeCondition(badge);
 				
-				if(badge.getBadgeId() != null && !badge.getBadgeId().equals(NO_BADGE_ID_STRING))
+				if(!this.identifier.isBlank()
+					&& badge.getBadgeId() != null
+					&& !badge.getBadgeId().equals(NO_BADGE_ID_STRING))
 				{
 					badge.setBadgeId(DELETED_INITIAL_CONDITION_STRING);
 					this.addQueryParameter(badge);
 				}
+				
+				// Activate the reset button
+				this.btnResetFilter.setEnabled(true);
 			});
 		}
 	}
@@ -436,8 +490,10 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	@SuppressWarnings("PMD.CognitiveComplexity") // Fixed in v2
 	private void formatLocalDateChipBadgeText(final ChipBadge<FilterCondition<T, ?>> chipBadge)
 	{
+		final FilterCondition<T, ?> filterField = chipBadge.getItem();
+		
 		if(this.dateRangePickerQuery.isVisible()
-			&& chipBadge.getItem().getSelectedCondition().getDescription().equals(IS_BETWEEN_COMPARATOR_DESCRIPTION))
+			&& filterField.getSelectedCondition().getDescription().equals(IS_BETWEEN_COMPARATOR_DESCRIPTION))
 		{
 			chipBadge.setItemLabelGenerator((ItemLabelGenerator<FilterCondition<T, ?>>)tFilterCondition ->
 			{
@@ -476,7 +532,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				return createChipComponentString(tFilterCondition, dateString);
 			});
 		}
-		else if(this.dateSearchQuery.isVisible())
+		else if(this.dateSearchQuery.isVisible() && filterField.getItem().getType().equals(LocalDate.class))
 		{
 			chipBadge.setItemLabelGenerator((ItemLabelGenerator<FilterCondition<T, ?>>)tFilterCondition ->
 			{
@@ -506,7 +562,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				return createChipComponentString(tFilterCondition, dateString);
 			});
 		}
-		else if(this.dateTimeSearchQuery.isVisible())
+		else if(this.dateTimeSearchQuery.isVisible() && filterField.getItem().getType().equals(LocalDateTime.class))
 		{
 			chipBadge.setItemLabelGenerator((ItemLabelGenerator<FilterCondition<T, ?>>)tFilterCondition ->
 				{
@@ -657,7 +713,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		else
 		{
 			// For txtSearchQuery
-			valueNotNull = true;
+			valueNotNull = !this.txtSearchQuery.getValue().isBlank();
 		}
 		
 		return valueNotNull && this.selOperations.getValue() != null;
@@ -1116,6 +1172,8 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				
 				this.removeInitialConditionIfBadgeIdAlreadyExists(this.queryBadgeIdList);
 				this.createConditionsFromQueryParameters();
+				
+				this.btnResetFilter.setEnabled(true);
 			}
 		}
 	}
@@ -1318,7 +1376,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			this.selFields.setItems(this.filterFieldList);
 		}
 		
-		final ChipBadge<FilterCondition<T, ?>> chipBadge = this.createBadgeConditionAndApplyFilter(
+		final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge = this.createBadgeConditionAndApplyFilter(
 			finalFilterField,
 			selectedCondition,
 			searchQuery,
@@ -1327,6 +1385,9 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		
 		// Just needed if the url parameters are activated
 		chipBadge.setBadgeId(badgeId);
+		
+		// Needed for resetting the conditions
+		this.initialChipBadges.add(chipBadge);
 		
 		return this;
 	}
