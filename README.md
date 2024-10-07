@@ -14,6 +14,12 @@ A Vaadin Flow component for filtering Grids.
 ## Installation
 [Installation guide for the latest release](https://github.com/xdev-software/vaadin-grid-filter/releases/latest#Installation)
 
+#### Compatibility with Vaadin
+
+| Vaadin version | Grid-Filter version |
+| --- | --- |
+| Vaadin 24+ (latest) | ``1+`` |
+
 ## Run the Demo
 * Checkout the repo
 * Run ``mvn install && mvn -f vaadin-grid-filter-demo spring-boot:run``
