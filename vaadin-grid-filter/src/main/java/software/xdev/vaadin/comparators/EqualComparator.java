@@ -62,6 +62,7 @@ public final class EqualComparator implements FilterComparator
 			|| Boolean.class.isAssignableFrom(clazz);
 	}
 	
+	@SuppressWarnings({"PMD.CognitiveComplexity", "PMD.NPathComplexity"}) // Fixed in v2
 	@Override
 	public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
 	{

@@ -38,7 +38,7 @@ public final class DateHelper
 		
 		for(final String pattern : datePickerI18n.getDateFormats())
 		{
-			patternString.append("[").append(pattern).append("]");
+			patternString.append('[').append(pattern).append(']');
 		}
 		
 		return DateTimeFormatter.ofPattern(patternString.toString());

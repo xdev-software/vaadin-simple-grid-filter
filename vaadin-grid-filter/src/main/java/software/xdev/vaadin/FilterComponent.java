@@ -86,6 +86,7 @@ import software.xdev.vaadin.utl.QueryParameterUtil;
  *
  * @param <T> Grid type
  */
+@SuppressWarnings("PMD.GodClass") // Fixed in v2
 public class FilterComponent<T> extends Composite<VerticalLayout> implements BeforeEnterObserver
 {
 	public static final String CHIP_BADGE_FILTER_COMPONENT = "chipFilterComponent";
@@ -432,6 +433,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	/**
 	 * Format chip badge input text for LocalDate and LocalDateTime.
 	 */
+	@SuppressWarnings("PMD.CognitiveComplexity") // Fixed in v2
 	private void formatLocalDateChipBadgeText(final ChipBadge<FilterCondition<T, ?>> chipBadge)
 	{
 		if(this.dateRangePickerQuery.isVisible()
@@ -759,6 +761,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			.toList());
 	}
 	
+	@SuppressWarnings({"PMD.CognitiveComplexity", "PMD.CollapsibleIfStatements"}) // Fixed in v2
 	private void createConditionsFromQueryParameters()
 	{
 		for(int i = 0; i < this.queryFieldList.size(); i++)

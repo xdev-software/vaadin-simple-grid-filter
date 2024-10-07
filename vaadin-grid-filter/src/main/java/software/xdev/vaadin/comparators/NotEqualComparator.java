@@ -61,7 +61,8 @@ public final class NotEqualComparator implements FilterComparator
                || Enum.class.isAssignableFrom(clazz)
                || Boolean.class.isAssignableFrom(clazz);
     }
-
+    
+    @SuppressWarnings({"PMD.CognitiveComplexity", "PMD.NPathComplexity"}) // Fixed in v2
     @Override
     public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
     {

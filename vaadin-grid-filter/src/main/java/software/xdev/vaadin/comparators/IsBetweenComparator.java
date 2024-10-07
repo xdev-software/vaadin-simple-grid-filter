@@ -60,6 +60,7 @@ public final class IsBetweenComparator implements FilterComparator
 		return LocalDate.class.isAssignableFrom(clazz);
 	}
 	
+	@SuppressWarnings("PMD.PreserveStackTrace") // Fixed in v2
 	@Override
 	public <B, T> Predicate<B> compare(final ValueProvider<B, T> provider, final String searchQuery)
 	{
