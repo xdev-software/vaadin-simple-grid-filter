@@ -22,6 +22,7 @@ import com.vaadin.flow.function.ValueProvider;
 import software.xdev.vaadin.comparators.utl.TypeHelper;
 
 
+// CPD-OFF - Fixed in v2
 public final class LessThanOrEqualsComparator implements FilterComparator
 {
 	public static final String LESS_THAN_OR_EQUALS_COMPARATOR_DESCRIPTION = "is less than or equals";

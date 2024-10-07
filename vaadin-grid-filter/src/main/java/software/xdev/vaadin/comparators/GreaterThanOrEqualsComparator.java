@@ -22,11 +22,12 @@ import com.vaadin.flow.function.ValueProvider;
 import software.xdev.vaadin.comparators.utl.TypeHelper;
 
 
+// CPD-OFF - Fixed in v2
 public final class GreaterThanOrEqualsComparator implements FilterComparator
 {
 	public static final String GREATER_THAN_OR_EQUALS_COMPARATOR_DESCRIPTION = "is greater than or equals";
 	
-	public static GreaterThanOrEqualsComparator instance;
+	private static GreaterThanOrEqualsComparator instance;
 	
 	private GreaterThanOrEqualsComparator()
 	{
