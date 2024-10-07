@@ -24,7 +24,7 @@ import com.vaadin.flow.function.ValueProvider;
 
 import software.xdev.vaadin.comparators.utl.TypeHelper;
 
-
+// CPD-OFF - Fixed in v2
 /**
  * Used for comparison with is before.
  */
