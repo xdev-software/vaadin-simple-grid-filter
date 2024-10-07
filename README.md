@@ -5,7 +5,8 @@
 ![Vaadin 24+](https://img.shields.io/badge/Vaadin%20Platform/Flow-24+-00b4f0)
 
 # vaadin-grid-filter
-A Vaadin Template Repo
+
+A Vaadin Flow component for filtering Grids.
 
 ![demo](assets/demo.png)
 
