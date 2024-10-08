@@ -1,4 +1,4 @@
-[![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0?logo=vaadin)](https://vaadin.com/directory/component/vaadin-grid-filter)
+[![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0?logo=vaadin)](https://vaadin.com/directory/component/grid-filter-for-vaadin)
 [![Latest version](https://img.shields.io/maven-central/v/software.xdev/vaadin-grid-filter?logo=apache%20maven)](https://mvnrepository.com/artifact/software.xdev/vaadin-grid-filter)
 [![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/vaadin-grid-filter/check-build.yml?branch=develop)](https://github.com/xdev-software/vaadin-grid-filter/actions/workflows/check-build.yml?query=branch%3Adevelop)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=xdev-software_vaadin-grid-filter&metric=alert_status)](https://sonarcloud.io/dashboard?id=xdev-software_vaadin-grid-filter)
