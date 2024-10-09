@@ -1,2 +1,2 @@
-# 1.0.2
+# 1.0.0
 _Initial release_
