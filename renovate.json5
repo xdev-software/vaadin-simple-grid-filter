@@ -4,7 +4,7 @@
   "packageRules": [
     {
       "description": "Ignore project internal dependencies",
-      "packagePattern": "^software.xdev:vaadin-grid-filter",
+      "packagePattern": "^software.xdev:vaadin-simple-grid-filter",
       "datasources": [
         "maven"
       ],

@@ -2,4 +2,4 @@
 
 ## Reporting a Vulnerability
 
-Please report a security vulnerability [on GitHub Security Advisories](https://github.com/xdev-software/vaadin-grid-filter/security/advisories/new).
+Please report a security vulnerability [on GitHub Security Advisories](https://github.com/xdev-software/vaadin-simple-grid-filter/security/advisories/new).

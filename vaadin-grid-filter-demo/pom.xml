@@ -6,11 +6,11 @@
 
 	<parent>
 		<groupId>software.xdev</groupId>
-		<artifactId>vaadin-grid-filter-root</artifactId>
+		<artifactId>vaadin-simple-grid-filter-root</artifactId>
 		<version>1.0.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>vaadin-grid-filter-demo</artifactId>
+	<artifactId>vaadin-simple-grid-filter-demo</artifactId>
 	<version>1.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -70,7 +70,7 @@
 		</dependency>
 		<dependency>
 			<groupId>software.xdev</groupId>
-			<artifactId>vaadin-grid-filter</artifactId>
+			<artifactId>vaadin-simple-grid-filter</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

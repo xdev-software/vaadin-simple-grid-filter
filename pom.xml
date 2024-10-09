@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>software.xdev</groupId>
-	<artifactId>vaadin-grid-filter-root</artifactId>
+	<artifactId>vaadin-simple-grid-filter-root</artifactId>
 	<version>1.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -15,8 +15,8 @@
 	</organization>
 
 	<modules>
-		<module>vaadin-grid-filter</module>
-		<module>vaadin-grid-filter-demo</module>
+		<module>vaadin-simple-grid-filter</module>
+		<module>vaadin-simple-grid-filter-demo</module>
 	</modules>
 
 	<properties>

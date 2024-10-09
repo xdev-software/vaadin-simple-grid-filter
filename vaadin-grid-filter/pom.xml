@@ -5,17 +5,17 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>software.xdev</groupId>
-	<artifactId>vaadin-grid-filter</artifactId>
+	<artifactId>vaadin-simple-grid-filter</artifactId>
 	<version>1.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Grid Filter for Vaadin</name>
 	<description>Grid Filter for Vaadin</description>
-	<url>https://github.com/xdev-software/vaadin-grid-filter</url>
+	<url>https://github.com/xdev-software/vaadin-simple-grid-filter</url>
 
 	<scm>
-		<url>https://github.com/xdev-software/vaadin-grid-filter</url>
-		<connection>scm:git:https://github.com/xdev-software/vaadin-grid-filter.git</connection>
+		<url>https://github.com/xdev-software/vaadin-simple-grid-filter</url>
+		<connection>scm:git:https://github.com/xdev-software/vaadin-simple-grid-filter.git</connection>
 	</scm>
 
 	<inceptionYear>2024</inceptionYear>
