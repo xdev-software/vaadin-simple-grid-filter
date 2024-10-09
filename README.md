@@ -6,7 +6,7 @@
 
 # vaadin-simple-grid-filter
 
-A Vaadin Flow component for filtering Grids.
+A simple Vaadin Flow component for filtering Grids.
 
 ![demo](assets/demo.png)
 
