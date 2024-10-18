@@ -86,7 +86,7 @@ public class MainView extends VerticalLayout implements AfterNavigationObserver
 			.withDatePickerI18n(datePickerI18n)
 			.withDateTimePickerLocale(Locale.GERMANY)
 			.withFilterButtonText("Add filter")
-			// .withUrlParameters("filter1")
+			.withUrlParameters("filter1")
 			.withCustomDateRangeModel(
 				new DateRangeModel<>(LocalDate.now(), LocalDate.now().plusDays(5), SimpleDateRanges.FREE),
 				List.of(SimpleDateRanges.allValues()))

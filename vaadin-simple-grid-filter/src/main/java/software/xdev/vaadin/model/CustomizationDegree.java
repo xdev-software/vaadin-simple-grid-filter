@@ -15,6 +15,9 @@
  */
 package software.xdev.vaadin.model;
 
+/**
+ * When editing a condition, the developer can specify how much of the condition can be edited.
+ */
 public enum CustomizationDegree
 {
 	EVERYTHING,
