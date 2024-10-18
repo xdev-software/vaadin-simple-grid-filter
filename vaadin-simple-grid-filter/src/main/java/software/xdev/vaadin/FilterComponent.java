@@ -47,7 +47,11 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.UI;
@@ -66,6 +70,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
+import com.vaadin.flow.shared.Registration;
 
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
 import software.xdev.vaadin.comparators.ContainsComparator;
@@ -370,6 +375,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final boolean editable;
 		
 		// Check if it's an initial condition
+		// Set editable/deletable and the customization degree
 		if(this.editingBadgeId != null && !this.editingBadgeId.equals(NO_BADGE_ID_STRING))
 		{
 			deletable = this.deletingBadgeEnabled;
@@ -397,6 +403,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			editable,
 			customizationDegree);
 		
+		// Query parameter
 		if(!this.identifier.isBlank())
 		{
 			if(this.editingBadgeId != null && !this.editingBadgeId.equals(NO_BADGE_ID_STRING))
@@ -479,7 +486,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			});
 		}
 		
-		this.deactivateDeleteButtonFromChipComponents(deletableCondition, badge);
+		this.setBtnDeleteClickListenerWhenConditionShouldBeDeletable(deletableCondition, badge);
 		
 		// Format chip badge text if it contains LocalDate/LocalDateTime
 		if(TemporalAccessor.class.isAssignableFrom(badge.getItem().getItem().getType())
@@ -491,12 +498,12 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		this.chipBadges.add(badge);
 		this.hlChipBadges.add(badge);
 		
-		this.updateGridFilter();
+		this.addFilterConditionToGrid(badge);
 		
 		return badge;
 	}
 	
-	private void deactivateDeleteButtonFromChipComponents(
+	private void setBtnDeleteClickListenerWhenConditionShouldBeDeletable(
 		final boolean conditionDeletable,
 		final ChipBadgeExtension<FilterCondition<T, ?>> badge)
 	{
@@ -813,32 +820,18 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		}
 	}
 	
-	private void updateGridFilter()
+	private void addFilterConditionToGrid(final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge)
 	{
-		if(this.chipBadges.isEmpty())
-		{
-			this.dataGrid.getListDataView().removeFilters();
-			return;
-		}
+		Objects.requireNonNull(chipBadge);
 		
-		this.dataGrid.getListDataView().setFilter(item ->
+		this.dataGrid.getListDataView().addFilter(item ->
 		{
-			final List<Predicate<T>> predicates = new ArrayList<>();
+			final FilterCondition<T, ?> item1 = chipBadge.getItem();
+			final String inputValue = item1.getInputValue();
+			final Predicate<T> predicate =
+				item1.getSelectedCondition().compare(item1.getItem().getValueProvider(), inputValue);
 			
-			for(final ChipBadge<FilterCondition<T, ?>> chipBadge : this.chipBadges)
-			{
-				final FilterCondition<T, ?> item1 = chipBadge.getItem();
-				final String inputValue = item1.getInputValue();
-				
-				predicates.add(
-					
-					item1.getSelectedCondition().compare(
-						item1.getItem().getValueProvider(),
-						inputValue)
-				);
-			}
-			
-			return predicates.stream().map(p -> p.test(item)).reduce(Boolean::logicalAnd).orElseThrow();
+			return predicate.test(item);
 		});
 	}
 	
@@ -939,8 +932,19 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	{
 		this.chipBadges.remove(chip);
 		this.hlChipBadges.remove(chip);
+		// Have to set all filter when removing a condition again because we cannot remove just one filter from the
+		// grid
 		this.updateGridFilter();
 		this.removeQueryParameter(chip);
+	}
+	
+	private void updateGridFilter()
+	{
+		// Remove all filters from the grid
+		this.dataGrid.getListDataView().removeFilters();
+		// Fire grid removed all filters event
+		// Every filter component in the current ui should add his filter back again to the grid
+		ComponentUtil.fireEvent(UI.getCurrent(), new FilterComponentResetGridFilterEvent(this, false));
 	}
 	
 	/**
@@ -1290,7 +1294,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	/**
 	 * Method for adding a specific filter condition as query parameter.
 	 *
-	 * @param filterCondition The condition which should be converted to query parameter.
+	 * @param chipBadge The condition which should be converted to query parameter.
 	 */
 	private void addQueryParameter(final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge)
 	{
@@ -1509,5 +1513,66 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		this.initialConditionIdCounter++;
 		
 		return filterComponent;
+	}
+	
+	// Needed for interacting with other filter components on the same ui
+	private Registration registration;
+	
+	@Override
+	protected void onAttach(final AttachEvent attachEvent)
+	{
+		super.onAttach(attachEvent);
+		// Register to events from the event bus
+		this.registration = ComponentUtil.addListener(
+			attachEvent.getUI(),
+			FilterComponentResetGridFilterEvent.class,
+			event ->
+			{
+				if(this.chipBadges.isEmpty())
+				{
+					return;
+				}
+				
+				// Get all conditions from filter component and add them to the grid
+				this.dataGrid.getListDataView().addFilter(item -> this.isItemMatchingFilter(item, this.chipBadges));
+			}
+		);
+	}
+	
+	private boolean isItemMatchingFilter(
+		final T item,
+		final List<ChipBadgeExtension<FilterCondition<T, ?>>> chipBadges)
+	{
+		final List<Predicate<T>> predicates = new ArrayList<>();
+		
+		for(final ChipBadge<FilterCondition<T, ?>> chipBadge : chipBadges)
+		{
+			final FilterCondition<T, ?> item1 = chipBadge.getItem();
+			final String inputValue = item1.getInputValue();
+			
+			predicates.add(
+				item1.getSelectedCondition().compare(
+					item1.getItem().getValueProvider(),
+					inputValue)
+			);
+		}
+		
+		return predicates.stream().map(p -> p.test(item)).reduce(Boolean::logicalAnd).orElseThrow();
+	}
+	
+	@Override
+	protected void onDetach(final DetachEvent detachEvent)
+	{
+		super.onDetach(detachEvent);
+		// Unregister from the event bus
+		this.registration.remove();
+	}
+	
+	private static class FilterComponentResetGridFilterEvent extends ComponentEvent<FilterComponent>
+	{
+		public FilterComponentResetGridFilterEvent(final FilterComponent source, final boolean fromClient)
+		{
+			super(source, fromClient);
+		}
 	}
 }
