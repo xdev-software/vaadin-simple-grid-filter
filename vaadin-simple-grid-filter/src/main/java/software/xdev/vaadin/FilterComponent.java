@@ -64,6 +64,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
 
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
@@ -1303,11 +1304,17 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		
 		this.ui.getPage().fetchCurrentURL(currentUrl ->
 		{
-			String separator = "?";
+			final String questionMarkCharacter = "?";
+			String querySeperator = "";
+			String currentQuery = currentUrl.getQuery();
 			
-			if(currentUrl.getQuery() != null)
+			if(currentQuery != null)
 			{
-				separator = "&";
+				querySeperator = "&";
+			}
+			else
+			{
+				currentQuery = "";
 			}
 			
 			this.ui
@@ -1315,14 +1322,17 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				.getHistory()
 				.replaceState(
 					null,
-					currentUrl
-						+ separator
-						+ QueryParameterUtil.createQueryParameterString(
-						this.identifier,
-						filterCondition,
-						chipBadge.getBadgeId(),
-						chipBadge.isBtnDeleteEnabled(),
-						chipBadge.isBtnEditEnabled()));
+					new Location(
+						currentUrl.getPath()
+							+ questionMarkCharacter
+							+ currentQuery
+							+ querySeperator
+							+ QueryParameterUtil.createQueryParameterString(
+							this.identifier,
+							filterCondition,
+							chipBadge.getBadgeId(),
+							chipBadge.isBtnDeleteEnabled(),
+							chipBadge.isBtnEditEnabled())));
 		});
 	}
 	
