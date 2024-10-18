@@ -19,6 +19,7 @@ import software.xdev.vaadin.comparators.IsBetweenComparator;
 import software.xdev.vaadin.comparators.NotEqualComparator;
 import software.xdev.vaadin.daterange_picker.business.DateRangeModel;
 import software.xdev.vaadin.daterange_picker.business.SimpleDateRanges;
+import software.xdev.vaadin.model.CustomizationDegree;
 import software.xdev.vaadin.model.Department;
 import software.xdev.vaadin.model.Person;
 import software.xdev.vaadin.model.SimpleFilterField;
@@ -85,7 +86,7 @@ public class MainView extends VerticalLayout implements AfterNavigationObserver
 			.withDatePickerI18n(datePickerI18n)
 			.withDateTimePickerLocale(Locale.GERMANY)
 			.withFilterButtonText("Add filter")
-			.withUrlParameters("filter1")
+			// .withUrlParameters("filter1")
 			.withCustomDateRangeModel(
 				new DateRangeModel<>(LocalDate.now(), LocalDate.now().plusDays(5), SimpleDateRanges.FREE),
 				List.of(SimpleDateRanges.allValues()))
@@ -100,7 +101,8 @@ public class MainView extends VerticalLayout implements AfterNavigationObserver
 				EqualComparator.getInstance(),
 				"true",
 				false,
-				true
+				true,
+				CustomizationDegree.INPUT_VALUE
 			);
 		
 		this.add(filterComponent, this.dataGrid);
