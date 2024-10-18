@@ -344,11 +344,13 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final boolean deletable;
 		final boolean editable;
 		
-		// Check if it's an initial condition
-		if(this.editingBadgeId != null && !this.editingBadgeId.equals(NO_BADGE_ID_STRING))
+		if(this.deletingBadgeEnabled != null && this.editingBadgeEnabled != null)
 		{
 			deletable = this.deletingBadgeEnabled;
 			editable = this.editingBadgeEnabled;
+			
+			this.deletingBadgeEnabled = null;
+			this.editingBadgeEnabled = null;
 		}
 		else
 		{
@@ -426,13 +428,14 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					// Make the cancel button invisible
 					this.btnCancelFilter.setVisible(false);
 					
-					// Just activated when the url parameters are activated
+					// Needed to save state of the condition if it was editable/deletable before editing
+					this.editingBadgeEnabled = badge.isBtnEditEnabled();
+					this.deletingBadgeEnabled = badge.isBtnDeleteEnabled();
+					
+					// Just activated when the url parameters are enabled
 					if(!this.identifier.isBlank())
 					{
 						this.editingBadgeId = badge.getBadgeId();
-						// Needed for the acceptFilterBtn
-						this.editingBadgeEnabled = badge.isBtnEditEnabled();
-						this.deletingBadgeEnabled = badge.isBtnDeleteEnabled();
 					}
 					
 					// Remove filter, update grid
