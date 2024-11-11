@@ -377,7 +377,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			this.deletingBadgeEnabled = null;
 			this.editingBadgeEnabled = null;
 			
-			if(this.editingBadgeEnabled != null)
+			if(this.editingBadgeId != null)
 			{
 				// Get customization rating from initial condition
 				customizationDegree = this.initialChipBadges
