@@ -374,13 +374,19 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			deletable = this.deletingBadgeEnabled;
 			editable = this.editingBadgeEnabled;
 			
-			// Get customization rating from initial condition
-			customizationDegree = this.initialChipBadges
-				.stream()
-				.filter(e -> e.getBadgeId().equals(this.editingBadgeId))
-				.toList()
-				.get(0)
-				.getCustomizationRating();
+			this.deletingBadgeEnabled = null;
+			this.editingBadgeEnabled = null;
+			
+			if(this.editingBadgeEnabled != null)
+			{
+				// Get customization rating from initial condition
+				customizationDegree = this.initialChipBadges
+					.stream()
+					.filter(e -> e.getBadgeId().equals(this.editingBadgeId))
+					.toList()
+					.get(0)
+					.getCustomizationRating();
+			}
 		}
 		else
 		{
@@ -468,11 +474,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					// Set the customization rating for the filter select and condition select
 					this.setUsedCustomizationDegreeForComponents(customizationDegree);
 					
-					// Just activated when the url parameters are activated
-					if(!this.identifier.isBlank())
-					{
-						this.editingBadgeId = badge.getBadgeId();
-					}
+					this.editingBadgeId = badge.getBadgeId();
 					
 					// Remove filter, update grid
 					this.removeChipBadgeCondition(badge);
