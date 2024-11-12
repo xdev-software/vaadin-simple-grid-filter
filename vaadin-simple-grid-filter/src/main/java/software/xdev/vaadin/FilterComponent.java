@@ -64,6 +64,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
 
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
@@ -369,19 +370,24 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final boolean deletable;
 		final boolean editable;
 		
-		// Check if it's an initial condition
-		if(this.editingBadgeId != null && !this.editingBadgeId.equals(NO_BADGE_ID_STRING))
+		if(this.deletingBadgeEnabled != null && this.editingBadgeEnabled != null)
 		{
 			deletable = this.deletingBadgeEnabled;
 			editable = this.editingBadgeEnabled;
 			
-			// Get customization rating from initial condition
-			customizationDegree = this.initialChipBadges
-				.stream()
-				.filter(e -> e.getBadgeId().equals(this.editingBadgeId))
-				.toList()
-				.get(0)
-				.getCustomizationRating();
+			this.deletingBadgeEnabled = null;
+			this.editingBadgeEnabled = null;
+			
+			if(this.editingBadgeId != null)
+			{
+				// Get customization rating from initial condition
+				customizationDegree = this.initialChipBadges
+					.stream()
+					.filter(e -> e.getBadgeId().equals(this.editingBadgeId))
+					.toList()
+					.get(0)
+					.getCustomizationRating();
+			}
 		}
 		else
 		{
@@ -461,17 +467,15 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					// Make the cancel button invisible
 					this.btnCancelFilter.setVisible(false);
 					
+					// Needed to save state of the condition if it was editable/deletable before editing
+					this.editingBadgeEnabled = badge.isBtnEditEnabled();
+					this.deletingBadgeEnabled = badge.isBtnDeleteEnabled();
+					
+					// Just activated when the url parameters are enabled
 					// Set the customization rating for the filter select and condition select
 					this.setUsedCustomizationDegreeForComponents(customizationDegree);
 					
-					// Just activated when the url parameters are activated
-					if(!this.identifier.isBlank())
-					{
-						this.editingBadgeId = badge.getBadgeId();
-						// Needed for the acceptFilterBtn
-						this.editingBadgeEnabled = badge.isBtnEditEnabled();
-						this.deletingBadgeEnabled = badge.isBtnDeleteEnabled();
-					}
+					this.editingBadgeId = badge.getBadgeId();
 					
 					// Remove filter, update grid
 					this.removeChipBadgeCondition(badge);
@@ -1319,11 +1323,17 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		
 		this.ui.getPage().fetchCurrentURL(currentUrl ->
 		{
-			String separator = "?";
+			final String questionMarkCharacter = "?";
+			String querySeperator = "";
+			String currentQuery = currentUrl.getQuery();
 			
-			if(currentUrl.getQuery() != null)
+			if(currentQuery != null)
 			{
-				separator = "&";
+				querySeperator = "&";
+			}
+			else
+			{
+				currentQuery = "";
 			}
 			
 			this.ui
@@ -1331,14 +1341,17 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				.getHistory()
 				.replaceState(
 					null,
-					currentUrl
-						+ separator
-						+ QueryParameterUtil.createQueryParameterString(
-						this.identifier,
-						filterCondition,
-						chipBadge.getBadgeId(),
-						chipBadge.isBtnDeleteEnabled(),
-						chipBadge.isBtnEditEnabled()));
+					new Location(
+						currentUrl.getPath()
+							+ questionMarkCharacter
+							+ currentQuery
+							+ querySeperator
+							+ QueryParameterUtil.createQueryParameterString(
+							this.identifier,
+							filterCondition,
+							chipBadge.getBadgeId(),
+							chipBadge.isBtnDeleteEnabled(),
+							chipBadge.isBtnEditEnabled())));
 		});
 	}
 	
