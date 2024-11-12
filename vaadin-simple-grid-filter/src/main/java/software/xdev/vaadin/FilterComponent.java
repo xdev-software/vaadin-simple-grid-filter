@@ -82,6 +82,7 @@ import software.xdev.vaadin.model.FilterCondition;
 import software.xdev.vaadin.model.FilterField;
 import software.xdev.vaadin.model.FilterFieldEnumExtension;
 import software.xdev.vaadin.model.SimpleFilterField;
+import software.xdev.vaadin.utl.FilterComponentUtl;
 import software.xdev.vaadin.utl.QueryParameterUtil;
 
 
@@ -519,8 +520,23 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					this.addQueryParameter(badge);
 				}
 				
-				// Activate the reset button
-				this.btnResetFilter.setEnabled(true);
+				// When no initial filter is existing
+				if(this.initialChipBadges.isEmpty() && this.chipBadges.isEmpty())
+				{
+					this.btnResetFilter.setEnabled(false);
+				}
+				else
+				{
+					final List<ChipBadgeExtension<FilterCondition<T, ?>>> initialChipBadgesCopy
+						= new ArrayList<>(this.initialChipBadges);
+					final List<ChipBadgeExtension<FilterCondition<T, ?>>> chipBadgesCopy
+						= new ArrayList<>(this.chipBadges);
+					
+					// Check if just the initial filter are currently applied. Then enable/disable the reset button as
+					// appropriate.
+					this.btnResetFilter.setEnabled(
+						!new FilterComponentUtl<T>().equalLists(initialChipBadgesCopy, chipBadgesCopy));
+				}
 			});
 		}
 	}
@@ -1293,7 +1309,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	/**
 	 * Method for adding a specific filter condition as query parameter.
 	 *
-	 * @param filterCondition The condition which should be converted to query parameter.
+	 * @param chipBadge The condition which should be converted to query parameter.
 	 */
 	private void addQueryParameter(final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge)
 	{
