@@ -15,9 +15,8 @@
  */
 package software.xdev.vaadin.utl;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import software.xdev.vaadin.model.ChipBadge;
 import software.xdev.vaadin.model.ChipBadgeExtension;
@@ -41,22 +40,11 @@ public final class FilterComponentUtl<T>
 		final List<ChipBadgeExtension<FilterCondition<T, ?>>> one,
 		final List<ChipBadgeExtension<FilterCondition<T, ?>>> two)
 	{
-		if(one == null && two == null)
-		{
-			return true;
-		}
-		
-		if(one == null || two == null || one.size() != two.size())
-		{
-			return false;
-		}
-		
-		// to avoid messing the order of the lists we will use a copy
-		final List<ChipBadgeExtension<FilterCondition<T, ?>>> oneCopy = new ArrayList<>(one);
-		final List<ChipBadgeExtension<FilterCondition<T, ?>>> twoCopy = new ArrayList<>(two);
-		
-		oneCopy.sort(Comparator.comparing(ChipBadge::getBadgeId));
-		twoCopy.sort(Comparator.comparing(ChipBadge::getBadgeId));
-		return one.equals(two);
+		return one.stream()
+			.map(ChipBadge::getBadgeId)
+			.collect(Collectors.toSet())
+			.equals(two.stream()
+				.map(ChipBadge::getBadgeId)
+				.collect(Collectors.toSet()));
 	}
 }
