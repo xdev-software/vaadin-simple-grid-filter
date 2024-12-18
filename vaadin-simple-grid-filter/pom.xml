@@ -107,7 +107,7 @@
 		<dependency>
 			<groupId>software.xdev</groupId>
 			<artifactId>vaadin-date-range-picker</artifactId>
-			<version>4.1.1</version>
+			<version>4.2.0</version>
 		</dependency>
 	</dependencies>
 
@@ -313,7 +313,7 @@
 							<dependency>
 								<groupId>com.puppycrawl.tools</groupId>
 								<artifactId>checkstyle</artifactId>
-								<version>10.20.2</version>
+								<version>10.21.0</version>
 							</dependency>
 						</dependencies>
 						<configuration>
