@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<licensePluginReport goal="FORMAT" timestamp="1728457298638">
-    <module artifactId="vaadin-simple-grid-filter" groupId="software.xdev" version="1.0.0"/>
+<licensePluginReport goal="FORMAT" timestamp="1734519766573">
+    <module artifactId="vaadin-simple-grid-filter" groupId="software.xdev" version="1.0.1"/>
     <files>
         <file path="src/main/java/software/xdev/vaadin/FilterComponent.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/builder/CustomizableFilterBuilder.java" result="NOOP"/>
@@ -24,11 +24,13 @@
         <file path="src/main/java/software/xdev/vaadin/comparators/utl/TypeHelper.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/model/ChipBadge.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/model/ChipBadgeExtension.java" result="NOOP"/>
+        <file path="src/main/java/software/xdev/vaadin/model/CustomizationDegree.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/model/FilterCondition.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/model/FilterField.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/model/FilterFieldEnumExtension.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/model/FilterProvider.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/model/SimpleFilterField.java" result="NOOP"/>
+        <file path="src/main/java/software/xdev/vaadin/utl/FilterComponentUtl.java" result="NOOP"/>
         <file path="src/main/java/software/xdev/vaadin/utl/QueryParameterUtil.java" result="NOOP"/>
     </files>
 </licensePluginReport>
