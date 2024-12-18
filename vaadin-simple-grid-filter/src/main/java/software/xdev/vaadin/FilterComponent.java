@@ -64,6 +64,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
 
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
@@ -76,10 +77,12 @@ import software.xdev.vaadin.daterange_picker.business.SimpleDateRanges;
 import software.xdev.vaadin.daterange_picker.ui.DateRangePicker;
 import software.xdev.vaadin.model.ChipBadge;
 import software.xdev.vaadin.model.ChipBadgeExtension;
+import software.xdev.vaadin.model.CustomizationDegree;
 import software.xdev.vaadin.model.FilterCondition;
 import software.xdev.vaadin.model.FilterField;
 import software.xdev.vaadin.model.FilterFieldEnumExtension;
 import software.xdev.vaadin.model.SimpleFilterField;
+import software.xdev.vaadin.utl.FilterComponentUtl;
 import software.xdev.vaadin.utl.QueryParameterUtil;
 
 
@@ -296,9 +299,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	
 	private void onShowFilterInput()
 	{
-		// Needed if the previous condition was an editable initial condition
-		// The editable initial condition makes the cancel button invisible
-		this.btnCancelFilter.setVisible(true);
 		
 		if(this.hlFilter.getChildren().findAny().isEmpty())
 		{
@@ -307,8 +307,10 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			this.btnCancelFilter.setVisible(true);
 			
 			this.selFields.setValue(null);
+			this.selFields.setReadOnly(false);
 			this.selOperations.setItems(Collections.emptyList());
 			this.selOperations.setEnabled(false);
+			this.selOperations.setReadOnly(false);
 			this.btnAcceptFilter.setEnabled(false);
 			this.txtSearchQuery.clear();
 			this.nmbSearchQuery.clear();
@@ -318,7 +320,6 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			this.setInputComponentVisibility(String.class);
 			
 			this.hlFilter.add(
-				
 				this.selFields,
 				this.selOperations,
 				this.txtSearchQuery,
@@ -334,6 +335,30 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	}
 	
 	/**
+	 * Method used to make the select field and select condition dependent on the customization degree readonly.
+	 *
+	 * @param usedCustomizationDegree Used to set which input field is readonly.
+	 */
+	private void setUsedCustomizationDegreeForComponents(final CustomizationDegree usedCustomizationDegree)
+	{
+		if(usedCustomizationDegree.equals(CustomizationDegree.INPUT_VALUE))
+		{
+			this.selFields.setReadOnly(true);
+			this.selOperations.setReadOnly(true);
+		}
+		else if(usedCustomizationDegree.equals(CustomizationDegree.CONDITION_AND_INPUT_VALUE))
+		{
+			this.selFields.setReadOnly(true);
+			this.selOperations.setReadOnly(false);
+		}
+		else
+		{
+			this.selFields.setReadOnly(false);
+			this.selOperations.setReadOnly(false);
+		}
+	}
+	
+	/**
 	 * Clicking on the accept filter button.
 	 */
 	private void onAcceptFilter()
@@ -341,14 +366,28 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final String userInput = this.getValueFromVisibleComponent();
 		
 		final ChipBadgeExtension<FilterCondition<T, ?>> badge;
+		CustomizationDegree customizationDegree = CustomizationDegree.EVERYTHING;
 		final boolean deletable;
 		final boolean editable;
 		
-		// Check if it's an initial condition
-		if(this.editingBadgeId != null && !this.editingBadgeId.equals(NO_BADGE_ID_STRING))
+		if(this.deletingBadgeEnabled != null && this.editingBadgeEnabled != null)
 		{
 			deletable = this.deletingBadgeEnabled;
 			editable = this.editingBadgeEnabled;
+			
+			this.deletingBadgeEnabled = null;
+			this.editingBadgeEnabled = null;
+			
+			if(this.editingBadgeId != null)
+			{
+				// Get customization rating from initial condition
+				customizationDegree = this.initialChipBadges
+					.stream()
+					.filter(e -> e.getBadgeId().equals(this.editingBadgeId))
+					.toList()
+					.get(0)
+					.getCustomizationRating();
+			}
 		}
 		else
 		{
@@ -361,7 +400,8 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			this.selOperations.getValue(),
 			userInput,
 			deletable,
-			editable);
+			editable,
+			customizationDegree);
 		
 		if(!this.identifier.isBlank())
 		{
@@ -390,7 +430,8 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final FilterComparator selOperation,
 		final String userInput,
 		final boolean deletableCondition,
-		final boolean editableCondition)
+		final boolean editableCondition,
+		final CustomizationDegree customizationDegree)
 	{
 		final ChipBadgeExtension<FilterCondition<T, ?>> badge = new ChipBadgeExtension<>(
 			new FilterCondition<>(
@@ -426,14 +467,15 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					// Make the cancel button invisible
 					this.btnCancelFilter.setVisible(false);
 					
-					// Just activated when the url parameters are activated
-					if(!this.identifier.isBlank())
-					{
-						this.editingBadgeId = badge.getBadgeId();
-						// Needed for the acceptFilterBtn
-						this.editingBadgeEnabled = badge.isBtnEditEnabled();
-						this.deletingBadgeEnabled = badge.isBtnDeleteEnabled();
-					}
+					// Needed to save state of the condition if it was editable/deletable before editing
+					this.editingBadgeEnabled = badge.isBtnEditEnabled();
+					this.deletingBadgeEnabled = badge.isBtnDeleteEnabled();
+					
+					// Just activated when the url parameters are enabled
+					// Set the customization rating for the filter select and condition select
+					this.setUsedCustomizationDegreeForComponents(customizationDegree);
+					
+					this.editingBadgeId = badge.getBadgeId();
 					
 					// Remove filter, update grid
 					this.removeChipBadgeCondition(badge);
@@ -478,8 +520,23 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					this.addQueryParameter(badge);
 				}
 				
-				// Activate the reset button
-				this.btnResetFilter.setEnabled(true);
+				// When no initial filter is existing
+				if(this.initialChipBadges.isEmpty() && this.chipBadges.isEmpty())
+				{
+					this.btnResetFilter.setEnabled(false);
+				}
+				else
+				{
+					final List<ChipBadgeExtension<FilterCondition<T, ?>>> initialChipBadgesCopy
+						= new ArrayList<>(this.initialChipBadges);
+					final List<ChipBadgeExtension<FilterCondition<T, ?>>> chipBadgesCopy
+						= new ArrayList<>(this.chipBadges);
+					
+					// Check if just the initial filter are currently applied. Then enable/disable the reset button as
+					// appropriate.
+					this.btnResetFilter.setEnabled(
+						!new FilterComponentUtl<T>().equalLists(initialChipBadgesCopy, chipBadgesCopy));
+				}
 			});
 		}
 	}
@@ -841,15 +898,30 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					{
 						if(!this.queryBadgeIdList.get(i).equals(DELETED_INITIAL_CONDITION_STRING))
 						{
+							final String badgeId = this.queryBadgeIdList.get(i);
+							CustomizationDegree customizationDegree = CustomizationDegree.EVERYTHING;
+							
+							// Check if it's an initial condition
+							final List<ChipBadgeExtension<FilterCondition<T, ?>>> cD = this.initialChipBadges
+								.stream()
+								.filter(e -> e.getBadgeId().equals(badgeId))
+								.toList();
+							
+							if(!cD.isEmpty())
+							{
+								customizationDegree = cD.get(0).getCustomizationRating();
+							}
+							
 							final ChipBadgeExtension<FilterCondition<T, ?>> chipBadgeExtension =
 								this.createBadgeConditionAndApplyFilter(
 									filterField,
 									comparatorOptional.get(),
 									this.queryInputFieldList.get(i),
 									Boolean.parseBoolean(this.queryBadgeDeletableList.get(i)),
-									Boolean.parseBoolean(this.queryBadgeEditableList.get(i)));
+									Boolean.parseBoolean(this.queryBadgeEditableList.get(i)),
+									customizationDegree);
 							
-							chipBadgeExtension.setBadgeId(this.queryBadgeIdList.get(i));
+							chipBadgeExtension.setBadgeId(badgeId);
 						}
 						else
 						{
@@ -1237,7 +1309,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	/**
 	 * Method for adding a specific filter condition as query parameter.
 	 *
-	 * @param filterCondition The condition which should be converted to query parameter.
+	 * @param chipBadge The condition which should be converted to query parameter.
 	 */
 	private void addQueryParameter(final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge)
 	{
@@ -1251,11 +1323,17 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		
 		this.ui.getPage().fetchCurrentURL(currentUrl ->
 		{
-			String separator = "?";
+			final String questionMarkCharacter = "?";
+			String querySeperator = "";
+			String currentQuery = currentUrl.getQuery();
 			
-			if(currentUrl.getQuery() != null)
+			if(currentQuery != null)
 			{
-				separator = "&";
+				querySeperator = "&";
+			}
+			else
+			{
+				currentQuery = "";
 			}
 			
 			this.ui
@@ -1263,14 +1341,17 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				.getHistory()
 				.replaceState(
 					null,
-					currentUrl
-						+ separator
-						+ QueryParameterUtil.createQueryParameterString(
-						this.identifier,
-						filterCondition,
-						chipBadge.getBadgeId(),
-						chipBadge.isBtnDeleteEnabled(),
-						chipBadge.isBtnEditEnabled()));
+					new Location(
+						currentUrl.getPath()
+							+ questionMarkCharacter
+							+ currentQuery
+							+ querySeperator
+							+ QueryParameterUtil.createQueryParameterString(
+							this.identifier,
+							filterCondition,
+							chipBadge.getBadgeId(),
+							chipBadge.isBtnDeleteEnabled(),
+							chipBadge.isBtnEditEnabled())));
 		});
 	}
 	
@@ -1349,6 +1430,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final String searchQuery,
 		final boolean conditionDeletable,
 		final boolean conditionEditable,
+		final CustomizationDegree customizationDegree,
 		final String badgeId)
 	{
 		FilterField<T, ?> finalFilterField = filterField;
@@ -1381,10 +1463,13 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			selectedCondition,
 			searchQuery,
 			conditionDeletable,
-			conditionEditable);
+			conditionEditable,
+			customizationDegree);
 		
 		// Just needed if the url parameters are activated
 		chipBadge.setBadgeId(badgeId);
+		
+		chipBadge.setCustomizationRating(customizationDegree);
 		
 		// Needed for resetting the conditions
 		this.initialChipBadges.add(chipBadge);
@@ -1414,6 +1499,30 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				searchQuery,
 				conditionDeletable,
 				conditionEditable,
+				CustomizationDegree.EVERYTHING,
+				String.valueOf(this.initialConditionIdCounter));
+		
+		this.initialConditionIdCounter++;
+		
+		return filterComponent;
+	}
+	
+	public FilterComponent<T> withInitialFilter(
+		final FilterField<T, ?> filterField,
+		final FilterComparator selectedCondition,
+		final String searchQuery,
+		final boolean conditionDeletable,
+		final boolean conditionEditable,
+		final CustomizationDegree customizationDegree)
+	{
+		final FilterComponent<T> filterComponent =
+			this.withInitialFilter(
+				filterField,
+				selectedCondition,
+				searchQuery,
+				conditionDeletable,
+				conditionEditable,
+				customizationDegree,
 				String.valueOf(this.initialConditionIdCounter));
 		
 		this.initialConditionIdCounter++;

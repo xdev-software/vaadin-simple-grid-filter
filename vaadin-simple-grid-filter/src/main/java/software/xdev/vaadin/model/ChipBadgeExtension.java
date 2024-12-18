@@ -30,6 +30,8 @@ public class ChipBadgeExtension<T> extends ChipBadge<T>
 	
 	protected final Button btnEdit = new Button(VaadinIcon.PENCIL.create());
 	
+	private CustomizationDegree customizationDegree = CustomizationDegree.EVERYTHING;
+	
 	public ChipBadgeExtension(final T item)
 	{
 		super(item);
@@ -74,6 +76,16 @@ public class ChipBadgeExtension<T> extends ChipBadge<T>
 	public boolean isBtnDeleteEnabled()
 	{
 		return this.btnDelete.isEnabled();
+	}
+	
+	public CustomizationDegree getCustomizationRating()
+	{
+		return this.customizationDegree;
+	}
+	
+	public void setCustomizationRating(final CustomizationDegree customizationDegree)
+	{
+		this.customizationDegree = customizationDegree;
 	}
 	
 	public Registration addBtnEditClickListener(final ComponentEventListener<ClickEvent<Button>> listener)
