@@ -43,6 +43,9 @@ A description how to get it running can be found [below](#run-the-demo).
 | --- | --- |
 | Vaadin 24+ (latest) | ``1+`` |
 
+### Spring-Boot
+* You may have to include ``software/xdev`` inside [``vaadin.allowed-packages``](https://vaadin.com/docs/latest/integrations/spring/configuration#configure-the-scanning-of-packages)
+
 ## Run the Demo
 * Checkout the repo
 * Run ``mvn install && mvn -f vaadin-simple-grid-filter-demo spring-boot:run``
