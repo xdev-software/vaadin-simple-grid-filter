@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.vaadin.flow.router.QueryParameters;
 
@@ -67,17 +68,19 @@ public final class QueryParameterUtil
 			&& idList.size() == conditionList.size()
 			&& idList.size() == inputList.size())
 		{
+			final Set<String> parametersToCheck = Set.of(
+				QUERY_INPUT_STRING,
+				QUERY_COMPONENT_ID_STRING,
+				QUERY_FIELD_STRING,
+				QUERY_CONDITION_STRING,
+				QUERY_BADGE_ID_STRING,
+				QUERY_BADGE_EDITABLE_STRING,
+				QUERY_BADGE_DELETABLE_STRING);
 			for(final Map.Entry<String, List<String>> entry : parametersMap.entrySet())
 			{
 				// Conditions and fields cannot be null or empty
-				if(entry.getKey().equals(QUERY_INPUT_STRING)
-					|| ((entry.getKey().equals(QUERY_COMPONENT_ID_STRING)
-					|| entry.getKey().equals(QUERY_FIELD_STRING)
-					|| entry.getKey().equals(QUERY_CONDITION_STRING)
-					|| entry.getKey().equals(QUERY_BADGE_ID_STRING)
-					|| entry.getKey().equals(QUERY_BADGE_EDITABLE_STRING)
-					|| entry.getKey().equals(QUERY_BADGE_DELETABLE_STRING))
-					&& entry.getValue().stream().noneMatch(String::isBlank)))
+				if(parametersToCheck.contains(entry.getKey())
+					&& entry.getValue().stream().noneMatch(String::isBlank))
 				{
 					rightParameters = true;
 				}

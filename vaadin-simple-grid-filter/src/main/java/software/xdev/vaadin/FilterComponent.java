@@ -260,9 +260,9 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				
 				// Change to a text field if the field is of type enum with condition 'contains'
 				if(isSelSearchQueryVisible
-					&& this.selOperations.getValue()
-					.getDescription()
-					.equals(ContainsComparator.CONTAINS_COMPARATOR_DESCRIPTION))
+					&& ContainsComparator.CONTAINS_COMPARATOR_DESCRIPTION.equals(
+					this.selOperations.getValue()
+						.getDescription()))
 				{
 					this.selSearchQuery.setVisible(false);
 					this.txtSearchQuery.setVisible(true);
@@ -405,7 +405,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		
 		if(!this.identifier.isBlank())
 		{
-			if(this.editingBadgeId != null && !this.editingBadgeId.equals(NO_BADGE_ID_STRING))
+			if(this.editingBadgeId != null && !NO_BADGE_ID_STRING.equals(this.editingBadgeId))
 			{
 				badge.setBadgeId(this.editingBadgeId);
 				this.editingBadgeId = null;
@@ -447,7 +447,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			badge.setBtnEditEnabled(true);
 			badge.addBtnEditClickListener(event ->
 			{
-				if((this.hlFilter.getChildren().findAny().isEmpty()))
+				if(this.hlFilter.getChildren().findAny().isEmpty())
 				{
 					// Add all components to the hlFilter layout
 					this.onShowFilterInput();
@@ -514,7 +514,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				
 				if(!this.identifier.isBlank()
 					&& badge.getBadgeId() != null
-					&& !badge.getBadgeId().equals(NO_BADGE_ID_STRING))
+					&& !NO_BADGE_ID_STRING.equals(badge.getBadgeId()))
 				{
 					badge.setBadgeId(DELETED_INITIAL_CONDITION_STRING);
 					this.addQueryParameter(badge);
@@ -550,7 +550,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final FilterCondition<T, ?> filterField = chipBadge.getItem();
 		
 		if(this.dateRangePickerQuery.isVisible()
-			&& filterField.getSelectedCondition().getDescription().equals(IS_BETWEEN_COMPARATOR_DESCRIPTION))
+			&& IS_BETWEEN_COMPARATOR_DESCRIPTION.equals(filterField.getSelectedCondition().getDescription()))
 		{
 			chipBadge.setItemLabelGenerator((ItemLabelGenerator<FilterCondition<T, ?>>)tFilterCondition ->
 			{
@@ -896,7 +896,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 						&& i < this.queryBadgeDeletableList.size()
 						&& i < this.queryBadgeEditableList.size())
 					{
-						if(!this.queryBadgeIdList.get(i).equals(DELETED_INITIAL_CONDITION_STRING))
+						if(!DELETED_INITIAL_CONDITION_STRING.equals(this.queryBadgeIdList.get(i)))
 						{
 							final String badgeId = this.queryBadgeIdList.get(i);
 							CustomizationDegree customizationDegree = CustomizationDegree.EVERYTHING;
@@ -933,7 +933,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 							{
 								// Check for same condition
 								final FilterCondition<T, ?> item = chipBadge.getItem();
-								if(!chipBadge.getBadgeId().equals(NO_BADGE_ID_STRING)
+								if(!NO_BADGE_ID_STRING.equals(chipBadge.getBadgeId())
 									&& this.queryInputFieldList.get(i).equals(item.getInputValue())
 									&& this.queryConditionFieldList.get(i)
 									.equals(item.getSelectedCondition().getDescription())
@@ -1216,7 +1216,13 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					.filter(i -> this.identifier.equals(idList.get(i)))
 					.toArray();
 				
-				String componentId, field, condition, input, badgeId, editable, deletable;
+				String componentId;
+				String field;
+				String condition;
+				String input;
+				String badgeId;
+				String editable;
+				String deletable;
 				
 				for(final int i : matchingIndices)
 				{

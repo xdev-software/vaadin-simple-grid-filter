@@ -46,7 +46,8 @@ public final class TypeHelper
             return false;
         }
     }
-
+    
+    @SuppressWarnings("PMD.UselessOperationOnImmutable")
     public static boolean isLocalDate(final String str)
     {
         Objects.requireNonNull(str);
@@ -61,7 +62,8 @@ public final class TypeHelper
             return false;
         }
     }
-
+    
+    @SuppressWarnings("PMD.UselessOperationOnImmutable")
     public static boolean isLocalDateTime(final String str)
     {
         Objects.requireNonNull(str);
