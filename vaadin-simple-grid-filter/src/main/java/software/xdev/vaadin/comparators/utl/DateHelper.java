@@ -16,7 +16,12 @@
 package software.xdev.vaadin.comparators.utl;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 
@@ -26,6 +31,9 @@ import com.vaadin.flow.component.datepicker.DatePicker;
  */
 public final class DateHelper
 {
+	private static final Map<List<String>, DateTimeFormatter> CACHED_FORMATTERS =
+		Collections.synchronizedMap(new WeakHashMap<>());
+	
 	private DateHelper()
 	{
 	}
@@ -34,13 +42,11 @@ public final class DateHelper
 	{
 		Objects.requireNonNull(datePickerI18n);
 		
-		final StringBuilder patternString = new StringBuilder();
-		
-		for(final String pattern : datePickerI18n.getDateFormats())
-		{
-			patternString.append('[').append(pattern).append(']');
-		}
-		
-		return DateTimeFormatter.ofPattern(patternString.toString());
+		return CACHED_FORMATTERS.computeIfAbsent(
+			datePickerI18n.getDateFormats(),
+			formats -> DateTimeFormatter.ofPattern(formats
+				.stream()
+				.map(pattern -> "[" + pattern + "]")
+				.collect(Collectors.joining())));
 	}
 }
