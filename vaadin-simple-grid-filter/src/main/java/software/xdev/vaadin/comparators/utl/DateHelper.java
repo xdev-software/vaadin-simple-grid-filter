@@ -38,6 +38,7 @@ public final class DateHelper
 	{
 	}
 	
+	@SuppressWarnings("PMD.AvoidRecreatingDateTimeFormatter")
 	public static DateTimeFormatter getDatePattern(final DatePicker.DatePickerI18n datePickerI18n)
 	{
 		Objects.requireNonNull(datePickerI18n);
