@@ -144,19 +144,19 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	private Boolean editingBadgeEnabled;
 	private Boolean deletingBadgeEnabled;
 	
-	private final List<FilterField<T, ?>> filterFieldList = new ArrayList<>();
+	private final List<FilterField<T, ?>> filterFields = new ArrayList<>();
 	private final Grid<T> dataGrid;
 	
 	private String identifier = "";
 	
 	// Query
-	private List<String> queryComponentIdList = new LinkedList<>();
-	private List<String> queryFieldList = new LinkedList<>();
-	private List<String> queryConditionFieldList = new LinkedList<>();
-	private List<String> queryInputFieldList = new LinkedList<>();
-	private List<String> queryBadgeIdList = new LinkedList<>();
-	private List<String> queryBadgeEditableList = new LinkedList<>();
-	private List<String> queryBadgeDeletableList = new LinkedList<>();
+	private List<String> queryComponentIds = new LinkedList<>();
+	private List<String> queryFields = new LinkedList<>();
+	private List<String> queryConditionFields = new LinkedList<>();
+	private List<String> queryInputFields = new LinkedList<>();
+	private List<String> queryBadgeIds = new LinkedList<>();
+	private List<String> queryBadgeEditables = new LinkedList<>();
+	private List<String> queryBadgeDeletables = new LinkedList<>();
 	
 	public FilterComponent(final Grid<T> dataGrid)
 	{
@@ -784,10 +784,10 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		if(filterField != null)
 		{
 			this.setInputComponentVisibility(filterField.getType());
-			final List<FilterComparator> comparatorList = filterField.getAvailableComparators();
+			final List<FilterComparator> comparators = filterField.getAvailableComparators();
 			
-			this.selOperations.setItems(comparatorList);
-			this.selOperations.setEnabled(!comparatorList.isEmpty());
+			this.selOperations.setItems(comparators);
+			this.selOperations.setEnabled(!comparators.isEmpty());
 			
 			// Check if a filterField is an enum
 			if(filterField instanceof FilterFieldEnumExtension)
@@ -874,12 +874,13 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			.toList());
 	}
 	
-	@SuppressWarnings({"PMD.CognitiveComplexity", "PMD.CollapsibleIfStatements"}) // Fixed in v2
+	@SuppressWarnings({"PMD.CognitiveComplexity", "PMD.CollapsibleIfStatements", "PMD.AvoidDeeplyNestedIfStmts"})
+	// Fixed in v2
 	private void createConditionsFromQueryParameters()
 	{
-		for(int i = 0; i < this.queryFieldList.size(); i++)
+		for(int i = 0; i < this.queryFields.size(); i++)
 		{
-			final String conditionDescription = this.queryConditionFieldList.get(i);
+			final String conditionDescription = this.queryConditionFields.get(i);
 			
 			for(final FilterField<T, ?> filterField : this.selFields.getListDataView().getItems().toList())
 			{
@@ -890,15 +891,15 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					.findAny();
 				
 				// Check if the comparator is available for this field
-				if(filterField.getDescription().equals(this.queryFieldList.get(i)) && comparatorOptional.isPresent())
+				if(filterField.getDescription().equals(this.queryFields.get(i)) && comparatorOptional.isPresent())
 				{
-					if(i < this.queryBadgeIdList.size()
-						&& i < this.queryBadgeDeletableList.size()
-						&& i < this.queryBadgeEditableList.size())
+					if(i < this.queryBadgeIds.size()
+						&& i < this.queryBadgeDeletables.size()
+						&& i < this.queryBadgeEditables.size())
 					{
-						if(!DELETED_INITIAL_CONDITION_STRING.equals(this.queryBadgeIdList.get(i)))
+						if(!DELETED_INITIAL_CONDITION_STRING.equals(this.queryBadgeIds.get(i)))
 						{
-							final String badgeId = this.queryBadgeIdList.get(i);
+							final String badgeId = this.queryBadgeIds.get(i);
 							CustomizationDegree customizationDegree = CustomizationDegree.EVERYTHING;
 							
 							// Check if it's an initial condition
@@ -916,9 +917,9 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 								this.createBadgeConditionAndApplyFilter(
 									filterField,
 									comparatorOptional.get(),
-									this.queryInputFieldList.get(i),
-									Boolean.parseBoolean(this.queryBadgeDeletableList.get(i)),
-									Boolean.parseBoolean(this.queryBadgeEditableList.get(i)),
+									this.queryInputFields.get(i),
+									Boolean.parseBoolean(this.queryBadgeDeletables.get(i)),
+									Boolean.parseBoolean(this.queryBadgeEditables.get(i)),
 									customizationDegree);
 							
 							chipBadgeExtension.setBadgeId(badgeId);
@@ -934,10 +935,10 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 								// Check for same condition
 								final FilterCondition<T, ?> item = chipBadge.getItem();
 								if(!NO_BADGE_ID_STRING.equals(chipBadge.getBadgeId())
-									&& this.queryInputFieldList.get(i).equals(item.getInputValue())
-									&& this.queryConditionFieldList.get(i)
+									&& this.queryInputFields.get(i).equals(item.getInputValue())
+									&& this.queryConditionFields.get(i)
 									.equals(item.getSelectedCondition().getDescription())
-									&& this.queryFieldList.get(i).equals(item.getItem().getDescription()))
+									&& this.queryFields.get(i).equals(item.getItem().getDescription()))
 								{
 									this.removeChipBadgeCondition(chipBadge);
 								}
@@ -1111,21 +1112,22 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	{
 		Objects.requireNonNull(filterField);
 		
-		final List<FilterField<T, ?>> filterFields = this.filterFieldList.stream()
+		final List<FilterField<T, ?>> filteredFilterFields = this.filterFields.stream()
 			.filter(f -> f.getDescription().equals(filterField.getDescription()))
 			.toList();
 		
 		// Check if filter field is already existing
-		// If not add the filter field to the filterFieldList
-		if(filterFields.isEmpty())
+		// If not add the filter field to the filterFields
+		if(filteredFilterFields.isEmpty())
 		{
-			
-			this.filterFieldList.add(filterField);
-			this.selFields.setItems(this.filterFieldList);
+			this.filterFields.add(filterField);
+			this.selFields.setItems(this.filterFields);
 		}
 		else
 		{
-			this.checkForNotDuplicatedComparatorsAndAddThemToTheFilterField(filterField, filterFields.get(0));
+			this.checkForNotDuplicatedComparatorsAndAddThemToTheFilterField(
+				filterField,
+				filteredFilterFields.getFirst());
 		}
 		
 		return this;
@@ -1142,9 +1144,9 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			if(!oldFilterField.getAvailableComparators().contains(comparator))
 			{
 				// Add filter field with new comparator
-				this.filterFieldList.remove(oldFilterField);
+				this.filterFields.remove(oldFilterField);
 				newlyBuildFilterField = oldFilterField.withAvailableComparator(comparator);
-				this.filterFieldList.add(oldFilterField);
+				this.filterFields.add(oldFilterField);
 			}
 		}
 		
@@ -1195,25 +1197,25 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		// Get conditions with same identifier as this component
 		if(!this.identifier.isBlank())
 		{
-			final Map<String, List<String>> parametersMap =
+			final Map<String, List<String>> parametersValues =
 				beforeEnterEvent.getLocation().getQueryParameters().getParameters();
 			
-			if(QueryParameterUtil.parametersAreValid(parametersMap))
+			if(QueryParameterUtil.parametersAreValid(parametersValues))
 			{
-				this.queryComponentIdList.clear();
-				this.queryFieldList.clear();
-				this.queryConditionFieldList.clear();
-				this.queryInputFieldList.clear();
+				this.queryComponentIds.clear();
+				this.queryFields.clear();
+				this.queryConditionFields.clear();
+				this.queryInputFields.clear();
 				
-				this.queryBadgeIdList.clear();
-				this.queryBadgeEditableList.clear();
-				this.queryBadgeDeletableList.clear();
+				this.queryBadgeIds.clear();
+				this.queryBadgeEditables.clear();
+				this.queryBadgeDeletables.clear();
 				
-				final List<String> idList = parametersMap.get(QUERY_COMPONENT_ID_STRING);
+				final List<String> ids = parametersValues.get(QUERY_COMPONENT_ID_STRING);
 				
 				// Get all indices which component ids are matching this one
-				final int[] matchingIndices = IntStream.range(0, idList.size())
-					.filter(i -> this.identifier.equals(idList.get(i)))
+				final int[] matchingIndices = IntStream.range(0, ids.size())
+					.filter(i -> this.identifier.equals(ids.get(i)))
 					.toArray();
 				
 				String componentId;
@@ -1226,29 +1228,29 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				
 				for(final int i : matchingIndices)
 				{
-					componentId = parametersMap.get(QUERY_COMPONENT_ID_STRING).get(i);
-					field = parametersMap.get(QUERY_FIELD_STRING).get(i);
-					condition = parametersMap.get(QUERY_CONDITION_STRING).get(i);
-					input = parametersMap.get(QUERY_INPUT_STRING).get(i);
+					componentId = parametersValues.get(QUERY_COMPONENT_ID_STRING).get(i);
+					field = parametersValues.get(QUERY_FIELD_STRING).get(i);
+					condition = parametersValues.get(QUERY_CONDITION_STRING).get(i);
+					input = parametersValues.get(QUERY_INPUT_STRING).get(i);
 					
-					badgeId = parametersMap.get(QUERY_BADGE_ID_STRING).get(i);
-					editable = parametersMap.get(QUERY_BADGE_EDITABLE_STRING).get(i);
-					deletable = parametersMap.get(QUERY_BADGE_DELETABLE_STRING).get(i);
+					badgeId = parametersValues.get(QUERY_BADGE_ID_STRING).get(i);
+					editable = parametersValues.get(QUERY_BADGE_EDITABLE_STRING).get(i);
+					deletable = parametersValues.get(QUERY_BADGE_DELETABLE_STRING).get(i);
 					
 					if(this.queryParameterIsNotAlreadyExisting(componentId, field, condition, input))
 					{
-						this.queryComponentIdList.add(componentId);
-						this.queryFieldList.add(field);
-						this.queryConditionFieldList.add(condition);
-						this.queryInputFieldList.add(input);
+						this.queryComponentIds.add(componentId);
+						this.queryFields.add(field);
+						this.queryConditionFields.add(condition);
+						this.queryInputFields.add(input);
 						
-						this.queryBadgeIdList.add(badgeId);
-						this.queryBadgeEditableList.add(editable);
-						this.queryBadgeDeletableList.add(deletable);
+						this.queryBadgeIds.add(badgeId);
+						this.queryBadgeEditables.add(editable);
+						this.queryBadgeDeletables.add(deletable);
 					}
 				}
 				
-				this.removeInitialConditionIfBadgeIdAlreadyExists(this.queryBadgeIdList);
+				this.removeInitialConditionIfBadgeIdAlreadyExists(this.queryBadgeIds);
 				this.createConditionsFromQueryParameters();
 				
 				this.btnResetFilter.setEnabled(true);
@@ -1260,15 +1262,15 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	 * This method is used to remove the initial filters after they have been added before the query parameters are
 	 * read.
 	 *
-	 * @param queryBadgeIdList The list with all badge ids.
+	 * @param queryBadgeIds The list with all badge ids.
 	 */
-	private void removeInitialConditionIfBadgeIdAlreadyExists(final List<String> queryBadgeIdList)
+	private void removeInitialConditionIfBadgeIdAlreadyExists(final List<String> queryBadgeIds)
 	{
-		final List<ChipBadgeExtension<FilterCondition<T, ?>>> chipBadges = new ArrayList<>(this.chipBadges);
+		final List<ChipBadgeExtension<FilterCondition<T, ?>>> chipBadgesCopy = new ArrayList<>(this.chipBadges);
 		
-		for(final String badgeId : queryBadgeIdList)
+		for(final String badgeId : queryBadgeIds)
 		{
-			for(final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge : chipBadges)
+			for(final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge : chipBadgesCopy)
 			{
 				if(chipBadge.getBadgeId().equals(badgeId))
 				{
@@ -1284,12 +1286,12 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		final String condition,
 		final String input)
 	{
-		for(int i = 0; i < this.queryComponentIdList.size(); i++)
+		for(int i = 0; i < this.queryComponentIds.size(); i++)
 		{
-			if(this.queryComponentIdList.get(i).equals(componentId)
-				&& field.equals(this.queryFieldList.get(i))
-				&& condition.equals(this.queryConditionFieldList.get(i))
-				&& input.equals(this.queryInputFieldList.get(i)))
+			if(this.queryComponentIds.get(i).equals(componentId)
+				&& field.equals(this.queryFields.get(i))
+				&& condition.equals(this.queryConditionFields.get(i))
+				&& input.equals(this.queryInputFields.get(i)))
 			{
 				return false;
 			}
@@ -1301,13 +1303,13 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	private String createMultipleQueryParameterString()
 	{
 		final Map<String, List<String>> query = new HashMap<>();
-		query.put(QUERY_COMPONENT_ID_STRING, this.queryComponentIdList);
-		query.put(QUERY_FIELD_STRING, this.queryFieldList);
-		query.put(QUERY_INPUT_STRING, this.queryInputFieldList);
-		query.put(QUERY_CONDITION_STRING, this.queryConditionFieldList);
-		query.put(QUERY_BADGE_ID_STRING, this.queryBadgeIdList);
-		query.put(QUERY_BADGE_DELETABLE_STRING, this.queryBadgeDeletableList);
-		query.put(QUERY_BADGE_EDITABLE_STRING, this.queryBadgeEditableList);
+		query.put(QUERY_COMPONENT_ID_STRING, this.queryComponentIds);
+		query.put(QUERY_FIELD_STRING, this.queryFields);
+		query.put(QUERY_INPUT_STRING, this.queryInputFields);
+		query.put(QUERY_CONDITION_STRING, this.queryConditionFields);
+		query.put(QUERY_BADGE_ID_STRING, this.queryBadgeIds);
+		query.put(QUERY_BADGE_DELETABLE_STRING, this.queryBadgeDeletables);
+		query.put(QUERY_BADGE_EDITABLE_STRING, this.queryBadgeEditables);
 		
 		return new QueryParameters(query).getQueryString();
 	}
@@ -1320,12 +1322,12 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 	private void addQueryParameter(final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge)
 	{
 		final FilterCondition<T, ?> filterCondition = chipBadge.getItem();
-		this.queryFieldList.add(filterCondition.getItem().getDescription());
-		this.queryConditionFieldList.add(filterCondition.getSelectedCondition().getDescription());
-		this.queryInputFieldList.add(filterCondition.getInputValue());
-		this.queryBadgeIdList.add(chipBadge.getBadgeId());
-		this.queryBadgeDeletableList.add(String.valueOf(chipBadge.isBtnDeleteEnabled()));
-		this.queryBadgeEditableList.add(String.valueOf(chipBadge.isBtnEditEnabled()));
+		this.queryFields.add(filterCondition.getItem().getDescription());
+		this.queryConditionFields.add(filterCondition.getSelectedCondition().getDescription());
+		this.queryInputFields.add(filterCondition.getInputValue());
+		this.queryBadgeIds.add(chipBadge.getBadgeId());
+		this.queryBadgeDeletables.add(String.valueOf(chipBadge.isBtnDeleteEnabled()));
+		this.queryBadgeEditables.add(String.valueOf(chipBadge.isBtnEditEnabled()));
 		
 		this.ui.getPage().fetchCurrentURL(currentUrl ->
 		{
@@ -1376,38 +1378,38 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					QueryParameters.fromString(currentUrl.getQuery()).getParameters();
 				final FilterCondition<T, ?> filterCondition = chipBadge.getItem();
 				
-				this.queryComponentIdList = new LinkedList<>(param.get(QUERY_COMPONENT_ID_STRING));
-				this.queryFieldList = new LinkedList<>(param.get(QUERY_FIELD_STRING));
-				this.queryConditionFieldList = new LinkedList<>(param.get(QUERY_CONDITION_STRING));
-				this.queryInputFieldList = new LinkedList<>(param.get(QUERY_INPUT_STRING));
-				this.queryBadgeIdList = new LinkedList<>(param.get(QUERY_BADGE_ID_STRING));
-				this.queryBadgeDeletableList = new LinkedList<>(param.get(QUERY_BADGE_DELETABLE_STRING));
-				this.queryBadgeEditableList = new LinkedList<>(param.get(QUERY_BADGE_EDITABLE_STRING));
+				this.queryComponentIds = new LinkedList<>(param.get(QUERY_COMPONENT_ID_STRING));
+				this.queryFields = new LinkedList<>(param.get(QUERY_FIELD_STRING));
+				this.queryConditionFields = new LinkedList<>(param.get(QUERY_CONDITION_STRING));
+				this.queryInputFields = new LinkedList<>(param.get(QUERY_INPUT_STRING));
+				this.queryBadgeIds = new LinkedList<>(param.get(QUERY_BADGE_ID_STRING));
+				this.queryBadgeDeletables = new LinkedList<>(param.get(QUERY_BADGE_DELETABLE_STRING));
+				this.queryBadgeEditables = new LinkedList<>(param.get(QUERY_BADGE_EDITABLE_STRING));
 				
 				// Checking if condition is in the current url
-				if(this.queryComponentIdList
+				if(this.queryComponentIds
 					.stream().anyMatch(x -> x.equals(this.identifier))
-					&& this.queryFieldList
+					&& this.queryFields
 					.stream().anyMatch(x -> x.equals(filterCondition.getItem().getDescription()))
-					&& this.queryConditionFieldList
+					&& this.queryConditionFields
 					.stream().anyMatch(x -> x.equals(filterCondition.getSelectedCondition().getDescription()))
-					&& this.queryInputFieldList
+					&& this.queryInputFields
 					.stream().anyMatch(x -> x.equals(filterCondition.getInputValue()))
-					&& this.queryBadgeIdList
+					&& this.queryBadgeIds
 					.stream().anyMatch(x -> x.equals(chipBadge.getBadgeId()))
-					&& this.queryBadgeDeletableList
+					&& this.queryBadgeDeletables
 					.stream().anyMatch(x -> x.equals(String.valueOf(chipBadge.isBtnDeleteEnabled())))
-					&& this.queryBadgeEditableList
+					&& this.queryBadgeEditables
 					.stream().anyMatch(x -> x.equals(String.valueOf(chipBadge.isBtnEditEnabled()))))
 				{
 					
-					this.queryComponentIdList.remove(this.identifier);
-					this.queryFieldList.remove(filterCondition.getItem().getDescription());
-					this.queryConditionFieldList.remove(filterCondition.getSelectedCondition().getDescription());
-					this.queryInputFieldList.remove(filterCondition.getInputValue());
-					this.queryBadgeIdList.remove(chipBadge.getBadgeId());
-					this.queryBadgeDeletableList.remove(String.valueOf(chipBadge.isBtnDeleteEnabled()));
-					this.queryBadgeEditableList.remove(String.valueOf(chipBadge.isBtnEditEnabled()));
+					this.queryComponentIds.remove(this.identifier);
+					this.queryFields.remove(filterCondition.getItem().getDescription());
+					this.queryConditionFields.remove(filterCondition.getSelectedCondition().getDescription());
+					this.queryInputFields.remove(filterCondition.getInputValue());
+					this.queryBadgeIds.remove(chipBadge.getBadgeId());
+					this.queryBadgeDeletables.remove(String.valueOf(chipBadge.isBtnDeleteEnabled()));
+					this.queryBadgeEditables.remove(String.valueOf(chipBadge.isBtnEditEnabled()));
 					
 					this.ui
 						.getPage()
@@ -1443,25 +1445,26 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		
 		if(conditionEditable)
 		{
-			final List<FilterField<T, ?>> filterFields = this.filterFieldList.stream()
+			final List<FilterField<T, ?>> filteredFilterFields = this.filterFields.stream()
 				.filter(f -> f.getDescription().equals(filterField.getDescription()))
 				.toList();
 			
 			// Check if filter field is already existing
-			// If not add the filter field to the filterFieldList
-			if(filterFields.isEmpty())
+			// If not add the filter field to the filterFields
+			if(filteredFilterFields.isEmpty())
 			{
 				finalFilterField = finalFilterField.withAvailableComparator(selectedCondition);
-				this.filterFieldList.add(finalFilterField);
+				this.filterFields.add(finalFilterField);
 			}
 			// If yes check if the comparator is already in the filter field
 			else
 			{
-				finalFilterField =
-					this.checkForNotDuplicatedComparatorsAndAddThemToTheFilterField(filterField, filterFields.get(0));
+				finalFilterField = this.checkForNotDuplicatedComparatorsAndAddThemToTheFilterField(
+					filterField,
+					filteredFilterFields.getFirst());
 			}
 			
-			this.selFields.setItems(this.filterFieldList);
+			this.selFields.setItems(this.filterFields);
 		}
 		
 		final ChipBadgeExtension<FilterCondition<T, ?>> chipBadge = this.createBadgeConditionAndApplyFilter(
