@@ -47,26 +47,27 @@ public final class QueryParameterUtil
 	/**
 	 * Used to check if the query parameters are not null, blank and have the correct number of parameters.
 	 *
-	 * @param parametersMap The query parameters which should be validated.
+	 * @param parameterValues The query parameters which should be validated.
 	 * @return Returns if parameters are valid.
 	 */
-	public static boolean parametersAreValid(final Map<String, List<String>> parametersMap)
+	public static boolean parametersAreValid(final Map<String, List<String>> parameterValues)
 	{
 		boolean rightParameters = false;
 		
-		final List<String> idList = parametersMap.get(QUERY_COMPONENT_ID_STRING);
-		final List<String> fieldList = parametersMap.get(QUERY_FIELD_STRING);
-		final List<String> conditionList = parametersMap.get(QUERY_CONDITION_STRING);
-		final List<String> inputList = parametersMap.get(QUERY_INPUT_STRING);
+		final List<String> ids = parameterValues.get(QUERY_COMPONENT_ID_STRING);
+		final List<String> fields = parameterValues.get(QUERY_FIELD_STRING);
+		final List<String> conditions = parameterValues.get(QUERY_CONDITION_STRING);
+		final List<String> inputs = parameterValues.get(QUERY_INPUT_STRING);
 		
-		if((parametersMap.size() == 4 || parametersMap.size() == 5 || parametersMap.size() == BIGGEST_PARAMETER_COUNT)
-			&& isNotNullOrEmpty(idList)
-			&& isNotNullOrEmpty(fieldList)
-			&& isNotNullOrEmpty(conditionList)
-			&& isNotNullOrEmpty(inputList)
-			&& idList.size() == fieldList.size()
-			&& idList.size() == conditionList.size()
-			&& idList.size() == inputList.size())
+		if((parameterValues.size() == 4 || parameterValues.size() == 5
+			|| parameterValues.size() == BIGGEST_PARAMETER_COUNT)
+			&& isNotNullOrEmpty(ids)
+			&& isNotNullOrEmpty(fields)
+			&& isNotNullOrEmpty(conditions)
+			&& isNotNullOrEmpty(inputs)
+			&& ids.size() == fields.size()
+			&& ids.size() == conditions.size()
+			&& ids.size() == inputs.size())
 		{
 			final Set<String> parametersToCheck = Set.of(
 				QUERY_INPUT_STRING,
@@ -76,7 +77,7 @@ public final class QueryParameterUtil
 				QUERY_BADGE_ID_STRING,
 				QUERY_BADGE_EDITABLE_STRING,
 				QUERY_BADGE_DELETABLE_STRING);
-			for(final Map.Entry<String, List<String>> entry : parametersMap.entrySet())
+			for(final Map.Entry<String, List<String>> entry : parameterValues.entrySet())
 			{
 				// Conditions and fields cannot be null or empty
 				if(parametersToCheck.contains(entry.getKey())
