@@ -874,7 +874,8 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			.toList());
 	}
 	
-	@SuppressWarnings({"PMD.CognitiveComplexity", "PMD.CollapsibleIfStatements"}) // Fixed in v2
+	@SuppressWarnings({"PMD.CognitiveComplexity", "PMD.CollapsibleIfStatements", "PMD.AvoidDeeplyNestedIfStmts"})
+	// Fixed in v2
 	private void createConditionsFromQueryParameters()
 	{
 		for(int i = 0; i < this.queryFields.size(); i++)
