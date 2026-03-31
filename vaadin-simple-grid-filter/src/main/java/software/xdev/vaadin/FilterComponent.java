@@ -918,7 +918,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 							final ChipBadgeExtension<FilterCondition<T, ?>> chipBadgeExtension =
 								this.createBadgeConditionAndApplyFilter(
 									filterField,
-									comparatorOptional.get(),
+									comparatorOptional.orElseThrow(),
 									this.queryInputFields.get(i),
 									Boolean.parseBoolean(this.queryBadgeDeletables.get(i)),
 									Boolean.parseBoolean(this.queryBadgeEditables.get(i)),
