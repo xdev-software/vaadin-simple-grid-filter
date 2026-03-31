@@ -71,7 +71,7 @@ import com.vaadin.flow.router.QueryParameters;
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
 import software.xdev.vaadin.comparators.ContainsComparator;
 import software.xdev.vaadin.comparators.FilterComparator;
-import software.xdev.vaadin.comparators.utl.I18NDateTimeFormatterConverter;
+import software.xdev.vaadin.comparators.utl.StringFormatsToDateTimeFormatter;
 import software.xdev.vaadin.daterange_picker.business.DateRange;
 import software.xdev.vaadin.daterange_picker.business.DateRangeModel;
 import software.xdev.vaadin.daterange_picker.business.SimpleDateRanges;
@@ -568,40 +568,44 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		{
 			chipBadge.setItemLabelGenerator((ItemLabelGenerator<FilterCondition<T, ?>>)tFilterCondition ->
 			{
-				LocalDate startDate;
-				LocalDate endDate;
+				record StartEndDateContainer(
+					LocalDate start,
+					LocalDate end
+				)
+				{
+				}
+				
+				StartEndDateContainer startEndContainer;
 				
 				try
 				{
 					final String[] dates = tFilterCondition.getInputValue().split(IS_BETWEEN_COMPARATOR_SEPARATOR);
 					
-					startDate = LocalDate.parse(dates[0]);
-					endDate = LocalDate.parse(dates[1]);
+					startEndContainer = new StartEndDateContainer(
+						LocalDate.parse(dates[0]),
+						LocalDate.parse(dates[1])
+					);
 				}
 				catch(final DateTimeParseException e)
 				{
-					startDate = LocalDate.MIN;
-					endDate = LocalDate.MAX;
+					startEndContainer = new StartEndDateContainer(LocalDate.MIN, LocalDate.MAX);
 				}
 				
-				String dateString;
+				final StartEndDateContainer fStartEndContainer = startEndContainer;
 				
-				if(this.dateRangePickerQuery.getDatePickerI18n().isPresent()
-					&& this.dateRangePickerQuery.getDatePickerI18n().get().getDateFormats() != null)
-				{
-					final DatePicker.DatePickerI18n datePickerI18n =
-						this.dateRangePickerQuery.getDatePickerI18n().get();
-					
-					dateString = startDate.format(I18NDateTimeFormatterConverter.getDatePattern(datePickerI18n));
-					dateString += " and "
-						+ endDate.format(I18NDateTimeFormatterConverter.getDatePattern(datePickerI18n));
-				}
-				else
-				{
-					dateString = startDate + " and " + endDate;
-				}
-				
-				return createChipComponentString(tFilterCondition, dateString);
+				return createChipComponentString(
+					tFilterCondition,
+					this.dateRangePickerQuery.getDatePickerI18n()
+						.map(DatePicker.DatePickerI18n::getDateFormats)
+						.map(dateFormats -> {
+							final DateTimeFormatter formatter =
+								StringFormatsToDateTimeFormatter.fromPattern(dateFormats);
+							
+							return fStartEndContainer.start().format(formatter)
+								+ " and "
+								+ fStartEndContainer.end().format(formatter);
+						})
+						.orElseGet(() -> fStartEndContainer.start() + " and " + fStartEndContainer.end()));
 			});
 		}
 		else if(this.dateSearchQuery.isVisible() && filterField.getItem().getType().equals(LocalDate.class))
@@ -619,20 +623,15 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					localDate = LocalDate.MIN;
 				}
 				
-				final String dateString;
+				final LocalDate fLocalDate = localDate;
 				
-				if(this.dateSearchQuery.getI18n() != null
-					&& this.dateSearchQuery.getI18n().getDateFormats() != null)
-				{
-					dateString =
-						localDate.format(I18NDateTimeFormatterConverter.getDatePattern(this.dateSearchQuery.getI18n()));
-				}
-				else
-				{
-					dateString = localDate.toString();
-				}
-				
-				return createChipComponentString(tFilterCondition, dateString);
+				return createChipComponentString(
+					tFilterCondition,
+					Optional.ofNullable(this.dateSearchQuery.getI18n())
+						.map(DatePicker.DatePickerI18n::getDateFormats)
+						.map(StringFormatsToDateTimeFormatter::fromPattern)
+						.map(fLocalDate::format)
+						.orElseGet(fLocalDate::toString));
 			});
 		}
 		else if(this.dateTimeSearchQuery.isVisible() && filterField.getItem().getType().equals(LocalDateTime.class))
@@ -653,27 +652,14 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 						localDate = LocalDate.MIN;
 					}
 					
-					String dateString;
-					
-					if(this.dateTimeSearchQuery.getDatePickerI18n() != null
-						&& this.dateTimeSearchQuery.getDatePickerI18n().getDateFormats() != null)
-					{
-						dateString =
-							localDate.format(I18NDateTimeFormatterConverter.getDatePattern(
-								this.dateTimeSearchQuery.getDatePickerI18n()).withLocale(
-								this.dateSearchQuery.getLocale()));
-					}
-					else
-					{
-						dateString =
-							localDate
-								.format(DateTimeFormatter.ISO_LOCAL_DATE
-									.withLocale(this.dateSearchQuery.getLocale()));
-					}
-					
-					dateString += " " + localDateTime.toLocalTime();
-					
-					return createChipComponentString(tFilterCondition, dateString);
+					return createChipComponentString(
+						tFilterCondition,
+						localDate.format(Optional.ofNullable(this.dateSearchQuery.getI18n())
+							.map(DatePicker.DatePickerI18n::getDateFormats)
+							.map(StringFormatsToDateTimeFormatter::fromPattern)
+							.orElse(DateTimeFormatter.ISO_LOCAL_DATE)
+							.withLocale(this.dateSearchQuery.getLocale()))
+							+ " " + localDateTime.toLocalTime());
 				}
 			);
 		}
