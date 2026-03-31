@@ -29,12 +29,12 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 /**
  * Used to build the date pattern from I18n.
  */
-public final class DateHelper
+public final class I18NDateTimeFormatterConverter
 {
 	private static final Map<List<String>, DateTimeFormatter> CACHED_FORMATTERS =
 		Collections.synchronizedMap(new WeakHashMap<>());
 	
-	private DateHelper()
+	private I18NDateTimeFormatterConverter()
 	{
 	}
 	

@@ -17,14 +17,14 @@ package software.xdev.vaadin;
 
 import static software.xdev.vaadin.comparators.IsBetweenComparator.IS_BETWEEN_COMPARATOR_DESCRIPTION;
 import static software.xdev.vaadin.comparators.IsBetweenComparator.IS_BETWEEN_COMPARATOR_SEPARATOR;
-import static software.xdev.vaadin.utl.QueryParameterUtil.NO_BADGE_ID_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_BADGE_DELETABLE_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_BADGE_EDITABLE_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_BADGE_ID_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_COMPONENT_ID_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_CONDITION_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_FIELD_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_INPUT_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.NO_BADGE_ID_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_BADGE_DELETABLE_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_BADGE_EDITABLE_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_BADGE_ID_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_COMPONENT_ID_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_CONDITION_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_FIELD_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_INPUT_STRING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -70,7 +71,7 @@ import com.vaadin.flow.router.QueryParameters;
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
 import software.xdev.vaadin.comparators.ContainsComparator;
 import software.xdev.vaadin.comparators.FilterComparator;
-import software.xdev.vaadin.comparators.utl.DateHelper;
+import software.xdev.vaadin.comparators.utl.I18NDateTimeFormatterConverter;
 import software.xdev.vaadin.daterange_picker.business.DateRange;
 import software.xdev.vaadin.daterange_picker.business.DateRangeModel;
 import software.xdev.vaadin.daterange_picker.business.SimpleDateRanges;
@@ -82,8 +83,7 @@ import software.xdev.vaadin.model.FilterCondition;
 import software.xdev.vaadin.model.FilterField;
 import software.xdev.vaadin.model.FilterFieldEnumExtension;
 import software.xdev.vaadin.model.SimpleFilterField;
-import software.xdev.vaadin.utl.FilterComponentUtl;
-import software.xdev.vaadin.utl.QueryParameterUtil;
+import software.xdev.vaadin.qp.QueryParameterManager;
 
 
 /**
@@ -534,11 +534,25 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					
 					// Check if just the initial filter are currently applied. Then enable/disable the reset button as
 					// appropriate.
-					this.btnResetFilter.setEnabled(
-						!new FilterComponentUtl<T>().equalLists(initialChipBadgesCopy, chipBadgesCopy));
+					this.btnResetFilter.setEnabled(!this.equalLists(initialChipBadgesCopy, chipBadgesCopy));
 				}
 			});
 		}
+	}
+	
+	/**
+	 * Check if the lists contains the same chip badges objects
+	 */
+	protected boolean equalLists(
+		final List<ChipBadgeExtension<FilterCondition<T, ?>>> one,
+		final List<ChipBadgeExtension<FilterCondition<T, ?>>> two)
+	{
+		return one.stream()
+			.map(ChipBadge::getBadgeId)
+			.collect(Collectors.toSet())
+			.equals(two.stream()
+				.map(ChipBadge::getBadgeId)
+				.collect(Collectors.toSet()));
 	}
 	
 	/**
@@ -578,8 +592,9 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					final DatePicker.DatePickerI18n datePickerI18n =
 						this.dateRangePickerQuery.getDatePickerI18n().get();
 					
-					dateString = startDate.format(DateHelper.getDatePattern(datePickerI18n));
-					dateString += " and " + endDate.format(DateHelper.getDatePattern(datePickerI18n));
+					dateString = startDate.format(I18NDateTimeFormatterConverter.getDatePattern(datePickerI18n));
+					dateString += " and "
+						+ endDate.format(I18NDateTimeFormatterConverter.getDatePattern(datePickerI18n));
 				}
 				else
 				{
@@ -609,7 +624,8 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 				if(this.dateSearchQuery.getI18n() != null
 					&& this.dateSearchQuery.getI18n().getDateFormats() != null)
 				{
-					dateString = localDate.format(DateHelper.getDatePattern(this.dateSearchQuery.getI18n()));
+					dateString =
+						localDate.format(I18NDateTimeFormatterConverter.getDatePattern(this.dateSearchQuery.getI18n()));
 				}
 				else
 				{
@@ -643,7 +659,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 						&& this.dateTimeSearchQuery.getDatePickerI18n().getDateFormats() != null)
 					{
 						dateString =
-							localDate.format(DateHelper.getDatePattern(
+							localDate.format(I18NDateTimeFormatterConverter.getDatePattern(
 								this.dateTimeSearchQuery.getDatePickerI18n()).withLocale(
 								this.dateSearchQuery.getLocale()));
 					}
@@ -1200,7 +1216,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			final Map<String, List<String>> parametersValues =
 				beforeEnterEvent.getLocation().getQueryParameters().getParameters();
 			
-			if(QueryParameterUtil.parametersAreValid(parametersValues))
+			if(QueryParameterManager.parametersAreValid(parametersValues))
 			{
 				this.queryComponentIds.clear();
 				this.queryFields.clear();
@@ -1354,7 +1370,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 							+ questionMarkCharacter
 							+ currentQuery
 							+ querySeperator
-							+ QueryParameterUtil.createQueryParameterString(
+							+ QueryParameterManager.createQueryParameterString(
 							this.identifier,
 							filterCondition,
 							chipBadge.getBadgeId(),

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package software.xdev.vaadin.utl;
+package software.xdev.vaadin.qp;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +27,7 @@ import com.vaadin.flow.router.QueryParameters;
 import software.xdev.vaadin.model.FilterCondition;
 
 
-public final class QueryParameterUtil
+public final class QueryParameterManager
 {
 	private static final int BIGGEST_PARAMETER_COUNT = 7;
 	
@@ -40,7 +40,7 @@ public final class QueryParameterUtil
 	public static final String QUERY_BADGE_DELETABLE_STRING = "deletable";
 	public static final String NO_BADGE_ID_STRING = "noBadgeId";
 	
-	private QueryParameterUtil()
+	private QueryParameterManager()
 	{
 	}
 	
@@ -125,16 +125,9 @@ public final class QueryParameterUtil
 			QUERY_INPUT_STRING,
 			Collections.singletonList(filterCondition.getInputValue()));
 		
-		// Set the badge id for the condition
-		String finalBadgeId = badgeId;
-		
-		if(finalBadgeId == null || finalBadgeId.isBlank())
-		{
-			// Just the initial filter have a badgeId
-			finalBadgeId = NO_BADGE_ID_STRING;
-		}
-		
-		query.put(QUERY_BADGE_ID_STRING, Collections.singletonList(finalBadgeId));
+		query.put(
+			QUERY_BADGE_ID_STRING,
+			Collections.singletonList(badgeId == null || badgeId.isBlank() ? NO_BADGE_ID_STRING : badgeId));
 		query.put(QUERY_BADGE_DELETABLE_STRING, Collections.singletonList(badgeDeletable.toString()));
 		query.put(QUERY_BADGE_EDITABLE_STRING, Collections.singletonList(badgeEditable.toString()));
 		
