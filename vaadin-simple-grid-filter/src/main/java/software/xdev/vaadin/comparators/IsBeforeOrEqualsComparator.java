@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 
 import com.vaadin.flow.function.ValueProvider;
 
-import software.xdev.vaadin.comparators.utl.TypeHelper;
+import software.xdev.vaadin.comparators.utl.TypeDetermination;
 
 // CPD-OFF - Fixed in v2
 /**
@@ -67,9 +67,9 @@ public final class IsBeforeOrEqualsComparator implements FilterComparator
 		{
 			final T apply = provider.apply(item);
 			
-			TypeHelper.checkIfTypeIsApplicable(this, apply.getClass());
+			TypeDetermination.checkIfTypeIsApplicable(this, apply.getClass());
 			
-			if(apply instanceof final LocalDate date && TypeHelper.isLocalDate(searchQuery))
+			if(apply instanceof final LocalDate date && TypeDetermination.isLocalDate(searchQuery))
 			{
 				final LocalDate dateInstance = LocalDate.from(date);
 				final LocalDate parsedSearchQuery = LocalDate.parse(searchQuery);
@@ -78,7 +78,7 @@ public final class IsBeforeOrEqualsComparator implements FilterComparator
 					|| dateInstance.isEqual(parsedSearchQuery);
 			}
 			
-			if(apply instanceof final LocalDateTime dateTime && TypeHelper.isLocalDateTime(searchQuery))
+			if(apply instanceof final LocalDateTime dateTime && TypeDetermination.isLocalDateTime(searchQuery))
 			{
 				final LocalDateTime dateTimeInstance = LocalDateTime.from(dateTime);
 				final LocalDateTime parsedSearchQuery = LocalDateTime.parse(searchQuery);

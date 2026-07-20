@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 
 import com.vaadin.flow.function.ValueProvider;
 
-import software.xdev.vaadin.comparators.utl.TypeHelper;
+import software.xdev.vaadin.comparators.utl.TypeDetermination;
 
 // CPD-OFF - Fixed in v2
 /**
@@ -62,9 +62,9 @@ public final class GreaterThanComparator implements FilterComparator
         {
             final T apply = provider.apply(item);
 
-            TypeHelper.checkIfTypeIsApplicable(this, apply.getClass());
+            TypeDetermination.checkIfTypeIsApplicable(this, apply.getClass());
 
-            if (apply instanceof final Number numb && TypeHelper.isDouble(searchQuery))
+            if (apply instanceof final Number numb && TypeDetermination.isDouble(searchQuery))
             {
                 return numb.doubleValue() > (Double.parseDouble(searchQuery));
             }

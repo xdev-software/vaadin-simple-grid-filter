@@ -19,32 +19,27 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
-
-import com.vaadin.flow.component.datepicker.DatePicker;
 
 
 /**
  * Used to build the date pattern from I18n.
  */
-public final class DateHelper
+public final class StringFormatsToDateTimeFormatter
 {
 	private static final Map<List<String>, DateTimeFormatter> CACHED_FORMATTERS =
 		Collections.synchronizedMap(new WeakHashMap<>());
 	
-	private DateHelper()
+	private StringFormatsToDateTimeFormatter()
 	{
 	}
 	
 	@SuppressWarnings("PMD.AvoidRecreatingDateTimeFormatter")
-	public static DateTimeFormatter getDatePattern(final DatePicker.DatePickerI18n datePickerI18n)
+	public static DateTimeFormatter fromPattern(final List<String> dateFormats)
 	{
-		Objects.requireNonNull(datePickerI18n);
-		
 		return CACHED_FORMATTERS.computeIfAbsent(
-			datePickerI18n.getDateFormats(),
+			dateFormats,
 			formats -> DateTimeFormatter.ofPattern(formats
 				.stream()
 				.map(pattern -> "[" + pattern + "]")

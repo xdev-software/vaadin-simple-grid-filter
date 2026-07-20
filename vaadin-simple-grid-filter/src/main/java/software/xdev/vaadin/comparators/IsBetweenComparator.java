@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 import com.vaadin.flow.function.ValueProvider;
 
 import software.xdev.vaadin.comparators.utl.IncorrectSearchQueryFormatException;
-import software.xdev.vaadin.comparators.utl.TypeHelper;
+import software.xdev.vaadin.comparators.utl.TypeDetermination;
 
 
 /**
@@ -67,7 +67,7 @@ public final class IsBetweenComparator implements FilterComparator
 		return item ->
 		{
 			final T apply = provider.apply(item);
-			TypeHelper.checkIfTypeIsApplicable(this, apply.getClass());
+			TypeDetermination.checkIfTypeIsApplicable(this, apply.getClass());
 			
 			final String startDate;
 			final String endDate;
@@ -90,8 +90,8 @@ public final class IsBetweenComparator implements FilterComparator
 			}
 			
 			if(apply instanceof final LocalDate date
-				&& TypeHelper.isLocalDate(startDate)
-				&& TypeHelper.isLocalDate(endDate))
+				&& TypeDetermination.isLocalDate(startDate)
+				&& TypeDetermination.isLocalDate(endDate))
 			{
 				return (LocalDate.from(date).isAfter(LocalDate.parse(startDate))
 					|| LocalDate.from(date).isEqual(LocalDate.parse(startDate)))

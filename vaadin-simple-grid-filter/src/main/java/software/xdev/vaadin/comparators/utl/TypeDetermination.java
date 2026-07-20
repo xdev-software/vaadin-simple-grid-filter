@@ -26,9 +26,9 @@ import software.xdev.vaadin.comparators.FilterComparator;
 /**
  * Used for checking if the string can be parsed to another datatype.
  */
-public final class TypeHelper
+public final class TypeDetermination
 {
-    private TypeHelper()
+    private TypeDetermination()
     {
     }
 

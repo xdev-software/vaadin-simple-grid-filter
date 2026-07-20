@@ -17,14 +17,14 @@ package software.xdev.vaadin;
 
 import static software.xdev.vaadin.comparators.IsBetweenComparator.IS_BETWEEN_COMPARATOR_DESCRIPTION;
 import static software.xdev.vaadin.comparators.IsBetweenComparator.IS_BETWEEN_COMPARATOR_SEPARATOR;
-import static software.xdev.vaadin.utl.QueryParameterUtil.NO_BADGE_ID_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_BADGE_DELETABLE_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_BADGE_EDITABLE_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_BADGE_ID_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_COMPONENT_ID_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_CONDITION_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_FIELD_STRING;
-import static software.xdev.vaadin.utl.QueryParameterUtil.QUERY_INPUT_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.NO_BADGE_ID_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_BADGE_DELETABLE_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_BADGE_EDITABLE_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_BADGE_ID_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_COMPONENT_ID_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_CONDITION_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_FIELD_STRING;
+import static software.xdev.vaadin.qp.QueryParameterManager.QUERY_INPUT_STRING;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -70,7 +71,7 @@ import com.vaadin.flow.router.QueryParameters;
 import software.xdev.vaadin.builder.CustomizableFilterBuilder;
 import software.xdev.vaadin.comparators.ContainsComparator;
 import software.xdev.vaadin.comparators.FilterComparator;
-import software.xdev.vaadin.comparators.utl.DateHelper;
+import software.xdev.vaadin.comparators.utl.StringFormatsToDateTimeFormatter;
 import software.xdev.vaadin.daterange_picker.business.DateRange;
 import software.xdev.vaadin.daterange_picker.business.DateRangeModel;
 import software.xdev.vaadin.daterange_picker.business.SimpleDateRanges;
@@ -82,8 +83,7 @@ import software.xdev.vaadin.model.FilterCondition;
 import software.xdev.vaadin.model.FilterField;
 import software.xdev.vaadin.model.FilterFieldEnumExtension;
 import software.xdev.vaadin.model.SimpleFilterField;
-import software.xdev.vaadin.utl.FilterComponentUtl;
-import software.xdev.vaadin.utl.QueryParameterUtil;
+import software.xdev.vaadin.qp.QueryParameterManager;
 
 
 /**
@@ -534,11 +534,25 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					
 					// Check if just the initial filter are currently applied. Then enable/disable the reset button as
 					// appropriate.
-					this.btnResetFilter.setEnabled(
-						!new FilterComponentUtl<T>().equalLists(initialChipBadgesCopy, chipBadgesCopy));
+					this.btnResetFilter.setEnabled(!this.equalLists(initialChipBadgesCopy, chipBadgesCopy));
 				}
 			});
 		}
+	}
+	
+	/**
+	 * Check if the lists contains the same chip badges objects
+	 */
+	protected boolean equalLists(
+		final List<ChipBadgeExtension<FilterCondition<T, ?>>> one,
+		final List<ChipBadgeExtension<FilterCondition<T, ?>>> two)
+	{
+		return one.stream()
+			.map(ChipBadge::getBadgeId)
+			.collect(Collectors.toSet())
+			.equals(two.stream()
+				.map(ChipBadge::getBadgeId)
+				.collect(Collectors.toSet()));
 	}
 	
 	/**
@@ -554,39 +568,44 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 		{
 			chipBadge.setItemLabelGenerator((ItemLabelGenerator<FilterCondition<T, ?>>)tFilterCondition ->
 			{
-				LocalDate startDate;
-				LocalDate endDate;
+				record StartEndDateContainer(
+					LocalDate start,
+					LocalDate end
+				)
+				{
+				}
+				
+				StartEndDateContainer startEndContainer;
 				
 				try
 				{
 					final String[] dates = tFilterCondition.getInputValue().split(IS_BETWEEN_COMPARATOR_SEPARATOR);
 					
-					startDate = LocalDate.parse(dates[0]);
-					endDate = LocalDate.parse(dates[1]);
+					startEndContainer = new StartEndDateContainer(
+						LocalDate.parse(dates[0]),
+						LocalDate.parse(dates[1])
+					);
 				}
 				catch(final DateTimeParseException e)
 				{
-					startDate = LocalDate.MIN;
-					endDate = LocalDate.MAX;
+					startEndContainer = new StartEndDateContainer(LocalDate.MIN, LocalDate.MAX);
 				}
 				
-				String dateString;
+				final StartEndDateContainer fStartEndContainer = startEndContainer;
 				
-				if(this.dateRangePickerQuery.getDatePickerI18n().isPresent()
-					&& this.dateRangePickerQuery.getDatePickerI18n().get().getDateFormats() != null)
-				{
-					final DatePicker.DatePickerI18n datePickerI18n =
-						this.dateRangePickerQuery.getDatePickerI18n().get();
-					
-					dateString = startDate.format(DateHelper.getDatePattern(datePickerI18n));
-					dateString += " and " + endDate.format(DateHelper.getDatePattern(datePickerI18n));
-				}
-				else
-				{
-					dateString = startDate + " and " + endDate;
-				}
-				
-				return createChipComponentString(tFilterCondition, dateString);
+				return createChipComponentString(
+					tFilterCondition,
+					this.dateRangePickerQuery.getDatePickerI18n()
+						.map(DatePicker.DatePickerI18n::getDateFormats)
+						.map(dateFormats -> {
+							final DateTimeFormatter formatter =
+								StringFormatsToDateTimeFormatter.fromPattern(dateFormats);
+							
+							return fStartEndContainer.start().format(formatter)
+								+ " and "
+								+ fStartEndContainer.end().format(formatter);
+						})
+						.orElseGet(() -> fStartEndContainer.start() + " and " + fStartEndContainer.end()));
 			});
 		}
 		else if(this.dateSearchQuery.isVisible() && filterField.getItem().getType().equals(LocalDate.class))
@@ -604,19 +623,15 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 					localDate = LocalDate.MIN;
 				}
 				
-				final String dateString;
+				final LocalDate fLocalDate = localDate;
 				
-				if(this.dateSearchQuery.getI18n() != null
-					&& this.dateSearchQuery.getI18n().getDateFormats() != null)
-				{
-					dateString = localDate.format(DateHelper.getDatePattern(this.dateSearchQuery.getI18n()));
-				}
-				else
-				{
-					dateString = localDate.toString();
-				}
-				
-				return createChipComponentString(tFilterCondition, dateString);
+				return createChipComponentString(
+					tFilterCondition,
+					Optional.ofNullable(this.dateSearchQuery.getI18n())
+						.map(DatePicker.DatePickerI18n::getDateFormats)
+						.map(StringFormatsToDateTimeFormatter::fromPattern)
+						.map(fLocalDate::format)
+						.orElseGet(fLocalDate::toString));
 			});
 		}
 		else if(this.dateTimeSearchQuery.isVisible() && filterField.getItem().getType().equals(LocalDateTime.class))
@@ -637,27 +652,14 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 						localDate = LocalDate.MIN;
 					}
 					
-					String dateString;
-					
-					if(this.dateTimeSearchQuery.getDatePickerI18n() != null
-						&& this.dateTimeSearchQuery.getDatePickerI18n().getDateFormats() != null)
-					{
-						dateString =
-							localDate.format(DateHelper.getDatePattern(
-								this.dateTimeSearchQuery.getDatePickerI18n()).withLocale(
-								this.dateSearchQuery.getLocale()));
-					}
-					else
-					{
-						dateString =
-							localDate
-								.format(DateTimeFormatter.ISO_LOCAL_DATE
-									.withLocale(this.dateSearchQuery.getLocale()));
-					}
-					
-					dateString += " " + localDateTime.toLocalTime();
-					
-					return createChipComponentString(tFilterCondition, dateString);
+					return createChipComponentString(
+						tFilterCondition,
+						localDate.format(Optional.ofNullable(this.dateSearchQuery.getI18n())
+							.map(DatePicker.DatePickerI18n::getDateFormats)
+							.map(StringFormatsToDateTimeFormatter::fromPattern)
+							.orElse(DateTimeFormatter.ISO_LOCAL_DATE)
+							.withLocale(this.dateSearchQuery.getLocale()))
+							+ " " + localDateTime.toLocalTime());
 				}
 			);
 		}
@@ -916,7 +918,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 							final ChipBadgeExtension<FilterCondition<T, ?>> chipBadgeExtension =
 								this.createBadgeConditionAndApplyFilter(
 									filterField,
-									comparatorOptional.get(),
+									comparatorOptional.orElseThrow(),
 									this.queryInputFields.get(i),
 									Boolean.parseBoolean(this.queryBadgeDeletables.get(i)),
 									Boolean.parseBoolean(this.queryBadgeEditables.get(i)),
@@ -1200,7 +1202,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 			final Map<String, List<String>> parametersValues =
 				beforeEnterEvent.getLocation().getQueryParameters().getParameters();
 			
-			if(QueryParameterUtil.parametersAreValid(parametersValues))
+			if(QueryParameterManager.parametersAreValid(parametersValues))
 			{
 				this.queryComponentIds.clear();
 				this.queryFields.clear();
@@ -1354,7 +1356,7 @@ public class FilterComponent<T> extends Composite<VerticalLayout> implements Bef
 							+ questionMarkCharacter
 							+ currentQuery
 							+ querySeperator
-							+ QueryParameterUtil.createQueryParameterString(
+							+ QueryParameterManager.createQueryParameterString(
 							this.identifier,
 							filterCondition,
 							chipBadge.getBadgeId(),
