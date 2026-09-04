@@ -4,7 +4,7 @@ We would absolutely love to get the community involved, and we welcome any form 
 
 ### Communication channels
 * Communication is primarily done using issues.
-* If you need support as soon as possible and you can't wait for any pull request, feel free to use [our support](https://xdev.software/en/services/support).
+* If you need support as soon as possible and you can't wait for any pull request, feel free to use [our support](https://xdev.software/en/services-products/support).
 * As a last resort measure or on otherwise important matter you may also [contact us directly](https://xdev.software/en/about-us/contact).
 
 ### Ways to help
@@ -12,7 +12,7 @@ We would absolutely love to get the community involved, and we welcome any form 
 * **Send pull requests**<br/>If you want to contribute code, check out the development instructions below.
   * However when contributing larger new features, please first discuss the change you wish to make via issue with the owners of this repository before making it.<br/>Otherwise your work might be rejected and your effort was pointless.
 
-We also encourage you to read the [contribution instructions by GitHub](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).
+We also encourage you to read the [contribution instructions by GitHub](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
 
 ## Developing
 
@@ -20,7 +20,7 @@ We also encourage you to read the [contribution instructions by GitHub](https://
 You should have the following things installed:
 * Git
 * Java 25 - should be as unmodified as possible (Recommended: [Eclipse Adoptium](https://adoptium.net/temurin/releases/))
-* Maven (Note that the [Maven Wrapper](https://maven.apache.org/wrapper/) is shipped with the repo)
+* Maven (Note that the [Maven Wrapper](https://maven.apache.org/tools/wrapper/) is shipped with the repo)
 
 ### Recommended setup
 * Install `IntelliJ`
@@ -42,9 +42,9 @@ You should have the following things installed:
 
 #### [SpringBoot-Developer-Tools](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools) 
 ... should automatically be enabled.<br/>
-If you are changing a file and build the project, parts of the app get  restarted.<br/>
+If you are changing a file and build the project, parts of the app get restarted.<br/>
 Bigger changes may require a complete restart.
-  * [Vaadin automatically reloads the UI on each restart](https://vaadin.com/docs/latest/configuration/live-reload/spring-boot).<br/>
+  * [Vaadin automatically reloads the UI on each restart](https://vaadin.com/docs/latest/flow/configuration/live-reload/spring-boot).<br/>
   You can control this behavior with the ``vaadin.devmode.liveReload.enabled`` property (default: ``true``).
 
 ## Releasing [![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/vaadin-simple-grid-filter/release.yml?branch=master)](https://github.com/xdev-software/vaadin-simple-grid-filter/actions/workflows/release.yml)
@@ -57,7 +57,7 @@ If the ``develop`` is ready for release, create a pull request to the ``master``
 
 When the release is finished do the following:
 * Merge the auto-generated PR (with the incremented version number) back into the ``develop``
-* Ensure that [Vaadin Directory](https://vaadin.com/directory) syncs the update and maybe update the component / version there
+* Ensure that [Vaadin Directory](https://vaadin.com/directory/) syncs the update and maybe update the component / version there
 
 ### Release failures
 
