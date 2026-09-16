@@ -15,17 +15,24 @@ You should have the following things installed:
   * Ensure that everything is encoded in `UTF-8`
   * Ensure that the JDK/Java-Version is correct
 
+#### [SpringBoot-Developer-Tools](https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools) 
+... should automatically be enabled.<br/>
+If you are changing a file and build the project, parts of the app get restarted.<br/>
+Bigger changes may require a complete restart.
+  * [Vaadin automatically reloads the UI on each restart](https://vaadin.com/docs/latest/flow/configuration/live-reload/spring-boot).<br/>
+  You can control this behavior with the ``vaadin.devmode.liveReload.enabled`` property (default: ``true``).
 
-## Releasing [![Build](https://img.shields.io/github/actions/workflow/status/xdev-software/template-placeholder/release.yml?branch=master)](https://github.com/xdev-software/template-placeholder/actions/workflows/release.yml)
+
+## Releasing
 
 Before releasing:
-* Consider doing a [test-deployment](https://github.com/xdev-software/template-placeholder/actions/workflows/test-deploy.yml?query=branch%3Adevelop) before actually releasing.
+* Consider doing a `test-deployment` before actually releasing.
 * Check the [changelog](CHANGELOG.md)
 
-If the ``develop`` is ready for release, create a pull request to the ``master``-Branch and merge the changes
+If the `develop` is ready for release, create a pull request to the `master`-Branch and merge the changes
 
 When the release is finished do the following:
-* Merge the auto-generated PR (with the incremented version number) back into the ``develop``
+* Merge the auto-generated PR (with the incremented version number) back into the `develop`
 * Ensure that [Vaadin Directory](https://vaadin.com/directory/) syncs the update and maybe update the component / version there
 
 ### Release failures
