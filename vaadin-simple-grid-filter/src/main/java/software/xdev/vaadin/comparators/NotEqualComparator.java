@@ -79,17 +79,17 @@ public final class NotEqualComparator implements FilterComparator
 
             if (apply instanceof final Number numb && TypeDetermination.isDouble(searchQuery))
             {
-                return numb.doubleValue() != (Double.parseDouble(searchQuery));
+                return numb.doubleValue() != Double.parseDouble(searchQuery);
             }
 
             if (apply instanceof final LocalDate date && TypeDetermination.isLocalDate(searchQuery))
             {
-                return !LocalDate.from(date).equals(LocalDate.parse(searchQuery));
+                return !date.equals(LocalDate.parse(searchQuery));
             }
 
             if (apply instanceof final LocalDateTime date && TypeDetermination.isLocalDateTime(searchQuery))
             {
-                return !LocalDateTime.from(date).equals(LocalDateTime.parse(searchQuery));
+                return !date.equals(LocalDateTime.parse(searchQuery));
             }
 
             if (apply instanceof final Enum<?> enm)

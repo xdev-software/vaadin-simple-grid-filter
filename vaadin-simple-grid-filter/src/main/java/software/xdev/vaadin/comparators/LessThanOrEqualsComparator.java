@@ -66,7 +66,7 @@ public final class LessThanOrEqualsComparator implements FilterComparator
 			
 			if(apply instanceof final Number numb && TypeDetermination.isDouble(searchQuery))
 			{
-				return numb.doubleValue() <= (Double.parseDouble(searchQuery));
+				return numb.doubleValue() <= Double.parseDouble(searchQuery);
 			}
 			
 			return false;
